@@ -64,13 +64,13 @@ func (p *Program) NewMesh(vertexes []mgl32.Vec3, faces []MeshFace, uvCoords []mg
 	// buffer type - length in bytes - data pointer - draw type
 	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, len(faces)*3*4, gl.Ptr(faces), gl.STATIC_DRAW)
 
-	// gl.GenBuffers(1, &mesh.normalVBO)
-	// gl.BindBuffer(gl.ARRAY_BUFFER, mesh.normalVBO)
-	// // buffer type - length in bytes - data pointer - draw type
-	// gl.BufferData(gl.ARRAY_BUFFER, len(normals)*3*4, gl.Ptr(normals), gl.STATIC_DRAW)
+	gl.GenBuffers(1, &mesh.normalVBO)
+	gl.BindBuffer(gl.ARRAY_BUFFER, mesh.normalVBO)
+	// buffer type - length in bytes - data pointer - draw type
+	gl.BufferData(gl.ARRAY_BUFFER, len(normals)*3*4, gl.Ptr(normals), gl.STATIC_DRAW)
 
-	// gl.EnableVertexAttribArray(p.NormalLocID)
-	// gl.VertexAttribPointer(p.TextureLocID, 3, gl.FLOAT, false, 3*4, gl.PtrOffset(0))
+	gl.EnableVertexAttribArray(p.NormalID)
+	gl.VertexAttribPointer(p.NormalID, 3, gl.FLOAT, false, 3*4, gl.PtrOffset(0))
 
 	return mesh
 }

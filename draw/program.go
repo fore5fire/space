@@ -32,6 +32,7 @@ type Program struct {
 	TextureID    int32
 	TextureLocID uint32
 	VertexID     uint32
+	NormalID     uint32
 
 	viewMut       sync.Mutex
 	view          mgl32.Mat4
@@ -93,6 +94,7 @@ func newProgram(vertShaderPath, fragShaderPath string) *Program {
 		TextureID:    gl.GetUniformLocation(id, gl.Str("tex\x00")),
 		VertexID:     uint32(gl.GetAttribLocation(id, gl.Str("vert\x00"))),
 		TextureLocID: uint32(gl.GetAttribLocation(id, gl.Str("vertTexCoord\x00"))),
+		NormalID:     uint32(gl.GetAttribLocation(id, gl.Str("vertNormal\x00"))),
 
 		projection: mgl32.Ident4(),
 		view:       mgl32.Ident4(),
