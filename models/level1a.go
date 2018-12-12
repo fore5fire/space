@@ -13,7 +13,7 @@ type Level1A struct {
 }
 
 func NewLevel1A(u *univ.Universe) *Level1A {
-	tex, err := draw.NewTexture("models/Material Diffuse Color.png")
+	tex, err := draw.NewTexture("models/level1a.png")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -29,6 +29,6 @@ func NewLevel1A(u *univ.Universe) *Level1A {
 	}
 }
 
-func (l *Level1A) Destroy() {
+func (l *Level1A) Remove() {
 	l.u.RemoveBody(l.Body)
 }

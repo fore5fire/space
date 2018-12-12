@@ -2,6 +2,7 @@ package univ
 
 import (
 	"fmt"
+	"log"
 	"time"
 	"unsafe"
 
@@ -48,8 +49,9 @@ func (u *Universe) NewBody(modelPath string, programType draw.ProgramType, textu
 		rotation: mgl32.QuatIdent(),
 		program:  u.window.GetProgram(programType),
 	}
-
+	// log.Println(modelPath)
 	for i, mesh := range meshes {
+		log.Printf("%+v", mesh)
 		faces := *(*[]draw.MeshFace)(unsafe.Pointer(&mesh.Faces))
 		body.meshes[i] = body.program.NewMesh(mesh.Vertices, faces, mesh.UVChannels[0], mesh.Normals)
 		body.meshes[i].SetTexture(textures[i])

@@ -31,7 +31,7 @@ func (cam *ChaseCam) Destroy() {
 
 func (cam *ChaseCam) tick(elapsed float32) {
 	loc := cam.target.GetLocation().Add(cam.location)
-	// rot := b.GetRotation().Mul(cam.rotation)
+	// rot := cam.target.GetRotation().Mul(cam.rotation)
 	transform := mgl32.LookAtV(loc, cam.target.GetLocation(), mgl32.Vec3{0, 1, 0})
 	// transform := mgl32.Translate3D(loc.Elem()).Mul4(rot.Normalize().Mat4())
 	cam.target.program.SetView(transform)

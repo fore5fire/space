@@ -8,13 +8,13 @@ import (
 )
 
 type Astronaut struct {
-	Body *univ.Body
-	u    *univ.Universe
+	*univ.Body
+	u *univ.Universe
 }
 
 func NewAstronaut(u *univ.Universe) *Astronaut {
 
-	tex, err := draw.NewTexture("models/pCylinder3Shape_color.gif")
+	tex, err := draw.NewTexture("models/astronaut.png")
 	if err != nil {
 		log.Fatal(err)
 	}
