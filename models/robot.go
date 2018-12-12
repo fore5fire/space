@@ -1,4 +1,4 @@
-package main
+package models
 
 import (
 	"log"
@@ -9,9 +9,10 @@ import (
 
 type Robot struct {
 	*univ.Body
+	u *univ.Universe
 }
 
-func NewRobot() *Robot {
+func NewRobot(u *univ.Universe) *Robot {
 
 	head, err := draw.NewTexture("models/Material Diffuse Color.png")
 	if err != nil {
@@ -37,9 +38,10 @@ func NewRobot() *Robot {
 
 	return &Robot{
 		Body: b,
+		u:    u,
 	}
 }
 
 func (r *Robot) Remove() {
-	u.RemoveBody(r.Body)
+	r.u.RemoveBody(r.Body)
 }

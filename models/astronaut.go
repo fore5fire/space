@@ -1,4 +1,4 @@
-package main
+package models
 
 import (
 	"log"
@@ -9,9 +9,10 @@ import (
 
 type Astronaut struct {
 	Body *univ.Body
+	u    *univ.Universe
 }
 
-func NewAstronaut() *Astronaut {
+func NewAstronaut(u *univ.Universe) *Astronaut {
 
 	tex, err := draw.NewTexture("models/pCylinder3Shape_color.gif")
 	if err != nil {
@@ -25,9 +26,10 @@ func NewAstronaut() *Astronaut {
 
 	return &Astronaut{
 		Body: b,
+		u:    u,
 	}
 }
 
 func (m *Astronaut) Remove() {
-	u.RemoveBody(m.Body)
+	m.u.RemoveBody(m.Body)
 }

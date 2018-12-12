@@ -34,11 +34,8 @@ func (cam *FreeCam) Destroy() {
 
 func (cam *FreeCam) tick(elapsed float32) {
 	cam.mut.Lock()
-	// rot := b.GetRotation().Mul(cam.rotation)
-	// transform := cam.rotation.Normalize().Mat4().Mul4(mgl32.Translate3D(cam.location.Elem()))
-	// transform := mgl32.Translate3D(loc.Elem()).Mul4(rot.Normalize().Mat4())
-	// cam.target.program.SetView(transform)
-
+	transform := cam.rotation.Normalize().Mat4().Mul4(mgl32.Translate3D(cam.location.Elem()))
+	cam.program.SetView(transform)
 	cam.mut.Unlock()
 }
 

@@ -89,11 +89,11 @@ func (w *Window) Loop(keyCallback glfw.KeyCallback, mouseButtonCallback glfw.Mou
 	// Configure global settings
 	gl.Enable(gl.DEPTH_TEST)
 	gl.DepthFunc(gl.LESS)
-	gl.ClearColor(1.0, 1.0, 1.0, 1.0)
+	gl.ClearColor(.5, .5, .5, .5)
 
 	var glState GLState
 
-	projection := mgl32.Perspective(mgl32.DegToRad(45.0), float32(w.GetWidth())/float32(w.GetHeight()), 0.1, 10.0)
+	projection := mgl32.Perspective(mgl32.DegToRad(45.0), float32(w.GetWidth())/float32(w.GetHeight()), 0.1, 100.0)
 
 	for !w.window.ShouldClose() {
 

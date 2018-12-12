@@ -8,6 +8,7 @@ import (
 	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/lsmith130/space/draw"
+	"github.com/lsmith130/space/models"
 	"github.com/lsmith130/space/univ"
 )
 
@@ -20,7 +21,7 @@ func init() {
 	runtime.LockOSThread()
 }
 
-var bot *Robot
+var bot *models.Robot
 var cam *univ.ChaseCam
 
 func main() {
@@ -32,10 +33,10 @@ func main() {
 	// level1 := NewLevel1A()
 	// defer level1.Remove()
 
-	bot := NewRobot()
+	bot = models.NewRobot(u)
 	defer bot.Remove()
 
-	cam := univ.NewChaseCam(bot.Body)
+	cam = univ.NewChaseCam(bot.Body)
 	cam.SetLocation(mgl32.Vec3{5, 5, 5})
 
 	// force := univ.NewLinearForce(bot2.Body, mgl32.Vec3{0.5, 0.5, 0.5})
@@ -50,11 +51,29 @@ func main() {
 }
 
 func HandleKey(w *glfw.Window, key glfw.Key, scanCode int, action glfw.Action, modifier glfw.ModifierKey) {
-	log.Println("Handle key")
+	switch key {
+	case glfw.KeyLeft:
+		cam.Translate(mgl32.Vec3{0.1, 0, 0})
+	case glfw.KeyRight:
+		cam.Translate(mgl32.Vec3{-0.1, 0, 0})
+	case glfw.KeyUp:
+		cam.Translate(mgl32.Vec3{0, 0, 0.1})
+	case glfw.KeyDown:
+		cam.Translate(mgl32.Vec3{0, 0, -0.1})
+
+	case glfw.KeyA:
+		bot.Translate(mgl32.Vec3{0.1, 0, 0})
+	case glfw.KeyD:
+		bot.Translate(mgl32.Vec3{-0.1, 0, 0})
+	case glfw.KeyW:
+		bot.Translate(mgl32.Vec3{0, 0, 0.1})
+	case glfw.KeyS:
+		bot.Translate(mgl32.Vec3{0, 0, -0.1})
+	}
 }
 func HandleMouseButton(w *glfw.Window, button glfw.MouseButton, action glfw.Action, modifier glfw.ModifierKey) {
 	log.Println("Handle mouse button")
 }
 func HandleCursor(w *glfw.Window, xpos float64, ypos float64) {
-
+	// cam.Translate(mgl32.)
 }
