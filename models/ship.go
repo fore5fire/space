@@ -14,7 +14,7 @@ import (
 type Ship struct {
 	*univ.Body
 	u      *univ.Universe
-	ticker *univ.Ticker
+	ticker *draw.Ticker
 }
 
 func NewShip(u *univ.Universe) *Ship {
@@ -42,7 +42,7 @@ func NewShip(u *univ.Universe) *Ship {
 		u:    u,
 	}
 
-	ship.ticker = univ.NewTicker(univ.DefaultRefreshRate, ship.tick)
+	ship.ticker = draw.NewTicker(univ.DefaultRefreshRate, ship.tick)
 	ship.ticker.Start()
 
 	return ship

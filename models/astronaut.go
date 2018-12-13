@@ -16,6 +16,9 @@ type Astronaut struct {
 	*univ.Body
 	u            *univ.Universe
 	walkingSound beep.StreamSeekCloser
+
+	forward, back, left, right, up, down *univ.LinearForce
+	rightroll, leftroll                  *univ.Torque
 }
 
 func NewAstronaut(u *univ.Universe) *Astronaut {
@@ -30,35 +33,98 @@ func NewAstronaut(u *univ.Universe) *Astronaut {
 		log.Fatal(err)
 	}
 
-	return &Astronaut{
-		Body: b,
-		u:    u,
+	a := &Astronaut{
+		Body:      b,
+		u:         u,
+		forward:   univ.NewLinearForce(b, mgl32.Vec3{0, 0, 20}),
+		back:      univ.NewLinearForce(b, mgl32.Vec3{0, 0, -20}),
+		left:      univ.NewLinearForce(b, mgl32.Vec3{20, 0, 0}),
+		right:     univ.NewLinearForce(b, mgl32.Vec3{-20, 0, 0}),
+		up:        univ.NewLinearForce(b, mgl32.Vec3{0, 20, 0}),
+		down:      univ.NewLinearForce(b, mgl32.Vec3{0, -20, 0}),
+		rightroll: univ.NewTorque(b, mgl32.QuatRotate(1.5, mgl32.Vec3{0, 1, 0})),
+		leftroll:  univ.NewTorque(b, mgl32.QuatRotate(-1.5, mgl32.Vec3{0, 1, 0})),
 	}
+
+	a.forward.Pause()
+	a.back.Pause()
+	a.left.Pause()
+	a.right.Pause()
+	a.up.Pause()
+	a.down.Pause()
+	a.rightroll.Pause()
+	a.leftroll.Pause()
+
+	return a
 }
 
 func (m *Astronaut) Remove() {
 	m.u.RemoveBody(m.Body)
 }
 
-func (m *Astronaut) StepForward() {
+func (m *Astronaut) SetForward(enable bool) {
 	f1, _ := os.Open("audio/walking.wav")
 	s, _, _ := wav.Decode(f1)
 	speaker.Play(s)
-	rot := m.Body.GetRotation().Rotate(mgl32.Vec3{0, 0, 1})
-	m.Translate(mgl32.Vec3{rot.X(), 0, rot.Z()})
+	if enable {
+		m.forward.Start()
+	} else {
+		m.forward.Pause()
+	}
 }
 
-func (m *Astronaut) StepBack() {
-	rot := m.Body.GetRotation().Rotate(mgl32.Vec3{0, 0, -1})
-	m.Translate(mgl32.Vec3{rot.X(), 0, rot.Z()})
+func (m *Astronaut) SetBack(enable bool) {
+	if enable {
+		m.back.Start()
+	} else {
+		m.back.Pause()
+	}
 }
 
-func (m *Astronaut) StepLeft() {
-	rot := m.Body.GetRotation().Rotate(mgl32.Vec3{1, 0, 0})
-	m.Translate(mgl32.Vec3{rot.X(), 0, rot.Z()})
+func (m *Astronaut) SetLeft(enable bool) {
+	if enable {
+		m.left.Start()
+	} else {
+		m.left.Pause()
+	}
 }
 
-func (m *Astronaut) StepRight() {
-	rot := m.Body.GetRotation().Rotate(mgl32.Vec3{-1, 0, 0})
-	m.Translate(mgl32.Vec3{rot.X(), 0, rot.Z()})
+func (m *Astronaut) SetRight(enable bool) {
+	if enable {
+		m.right.Start()
+	} else {
+		m.right.Pause()
+	}
+}
+
+func (m *Astronaut) SetDown(enable bool) {
+	if enable {
+		m.down.Start()
+	} else {
+		m.down.Pause()
+	}
+}
+
+func (m *Astronaut) SetUp(enable bool) {
+	if enable {
+		m.up.Start()
+	} else {
+		m.up.Pause()
+	}
+}
+
+func (m *Astronaut) SetRollRight(enable bool) {
+	if enable {
+		m.rightroll.Start()
+	} else {
+		m.rightroll.Pause()
+	}
+}
+
+func (m *Astronaut) SetRollLeft(enable bool) {
+	if enable {
+		m.leftroll.Start()
+	} else {
+		m.leftroll.Pause()
+	}
 }

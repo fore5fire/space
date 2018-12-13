@@ -1,8 +1,6 @@
 package univ
 
 import (
-	"sync"
-
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/lsmith130/space/draw"
 )
@@ -10,14 +8,10 @@ import (
 // LinearForce is an observer that only applies the translation
 // portion of a force to a body.
 type LinearForce struct {
-	vector       mgl32.Vec3
-	velocityMut  sync.Mutex
-	lastVelocity mgl32.Vec3
-	velocity     mgl32.Vec3
-	body         *Body
+	vector mgl32.Vec3
+	body   *Body
 
-	velocityTicker *draw.Ticker
-	accelTicker    *draw.Ticker
+	accelTicker *draw.Ticker
 }
 
 // NewLinearForce creates a new LinearForce.
@@ -27,7 +21,6 @@ func NewLinearForce(b *Body, vector mgl32.Vec3) *LinearForce {
 		body:   b,
 	}
 	f.accelTicker = draw.NewTicker(DefaultRefreshRate, f.accelTick)
-	f.velocityTicker = draw.NewTicker(DefaultRefreshRate, f.velocityTick)
 	return f
 }
 
@@ -43,43 +36,27 @@ func (f *LinearForce) Pause() {
 
 // Destroy stops f and cleans up its resources. f should not be used after it is destroyed.
 func (f *LinearForce) Destroy() {
-	f.velocityTicker.Close()
 	f.accelTicker.Close()
 }
 
-func (f *LinearForce) velocityTick(elapsed float32) {
-	f.velocityMut.Lock()
-	f.body.Translate(f.velocity.Add(f.lastVelocity).Mul(elapsed / 2))
-	f.lastVelocity = f.velocity
-	f.velocityMut.Unlock()
-}
-
 func (f *LinearForce) accelTick(elapsed float32) {
-	f.velocityMut.Lock()
-	f.velocity = f.velocity.Add(f.vector.Mul(elapsed))
-	f.velocityMut.Unlock()
+	f.body.SetVelocity(f.body.GetVelocity().Add(f.body.GetRotation().Rotate(f.vector.Mul(elapsed))))
 }
 
 // Torque is an observer that applies a torque to a body
 type Torque struct {
-	torque       mgl32.Quat
-	velocityMut  sync.Mutex
-	angularV     mgl32.Quat
-	lastAngularV mgl32.Quat
-	body         *Body
+	torque mgl32.Quat
+	body   *Body
 
-	velocityTicker *draw.Ticker
-	accelTicker    *draw.Ticker
+	accelTicker *draw.Ticker
 }
 
 // NewTorque creates a new torque object, initially paused.
 func NewTorque(b *Body, torque mgl32.Quat) *Torque {
 	t := &Torque{
-		torque:   torque,
-		angularV: mgl32.QuatIdent(),
-		body:     b,
+		torque: torque,
+		body:   b,
 	}
-	t.velocityTicker = draw.NewTicker(DefaultRefreshRate, t.velocityTick)
 	t.accelTicker = draw.NewTicker(DefaultRefreshRate, t.accelTick)
 	return t
 }
@@ -94,24 +71,13 @@ func (t *Torque) Pause() {
 	t.accelTicker.Stop()
 }
 
-func (t *Torque) velocityTick(elapsed float32) {
-	t.velocityMut.Lock()
-	angularV := mgl32.QuatNlerp(t.angularV, t.lastAngularV, 0.5)
-	t.body.Rotate(mgl32.QuatNlerp(mgl32.QuatIdent(), angularV, elapsed))
-	t.lastAngularV = t.angularV
-	t.velocityMut.Unlock()
-}
-
 func (t *Torque) accelTick(elapsed float32) {
-
-	t.velocityMut.Lock()
-	t.angularV = mgl32.QuatNlerp(t.angularV, t.angularV.Mul(t.torque), elapsed)
-	t.velocityMut.Unlock()
+	v := t.body.GetAngularV()
+	t.body.SetAngularV(mgl32.QuatNlerp(v, v.Mul(t.torque), elapsed))
 }
 
 // Destroy stops t and cleans up its resources. t should not be used after it is destroyed.
 func (t *Torque) Destroy() {
-	t.velocityTicker.Close()
 	t.accelTicker.Close()
 }
 

@@ -18,7 +18,7 @@ type Goal struct {
 	*univ.Body
 	u      *univ.Universe
 	target *univ.Body
-	ticker *univ.Ticker
+	ticker *draw.Ticker
 }
 
 func NewGoal(u *univ.Universe) *Goal {

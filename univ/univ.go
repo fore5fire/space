@@ -49,6 +49,7 @@ func (u *Universe) NewBody(modelPath string, program draw.Program, textures []*d
 		rotation:  mgl32.QuatIdent(),
 		program:   program,
 		observers: make(map[Observer]struct{}),
+		angularV:  mgl32.QuatIdent(),
 	}
 
 	switch program := program.(type) {
@@ -80,7 +81,7 @@ func (u *Universe) NewBody(modelPath string, program draw.Program, textures []*d
 	}
 
 	u.bodies[body] = struct{}{}
-
+	body.ticker = draw.NewTicker(DefaultRefreshRate, body.velocityTick)
 	return body, nil
 }
 

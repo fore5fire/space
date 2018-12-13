@@ -67,28 +67,44 @@ func main() {
 }
 
 func HandleKey(w *glfw.Window, key glfw.Key, scanCode int, action glfw.Action, modifier glfw.ModifierKey) {
-	if action == 1 {
-		return
-	}
 
 	switch key {
 	case glfw.KeyLeft:
+		if action == glfw.Release {
+			return
+		}
 		man.Rotate(mgl32.QuatRotate(.1, mgl32.Vec3{0, 1, 0}))
 	case glfw.KeyRight:
+		if action == glfw.Release {
+			return
+		}
 		man.Rotate(mgl32.QuatRotate(-.1, mgl32.Vec3{0, 1, 0}))
 	case glfw.KeyUp:
+		if action == glfw.Release {
+			return
+		}
 		cam.Translate(mgl32.Vec3{0, 0.2, 0})
 	case glfw.KeyDown:
+		if action == glfw.Release {
+			return
+		}
 		cam.Translate(mgl32.Vec3{0, -0.2, 0})
-
 	case glfw.KeyA:
-		man.StepLeft()
+		man.SetLeft(action != glfw.Release)
 	case glfw.KeyD:
-		man.StepRight()
+		man.SetRight(action != glfw.Release)
 	case glfw.KeyW:
-		man.StepForward()
+		man.SetForward(action != glfw.Release)
 	case glfw.KeyS:
-		man.StepBack()
+		man.SetBack(action != glfw.Release)
+	case glfw.KeyQ:
+		man.SetRollLeft(action != glfw.Release)
+	case glfw.KeyE:
+		man.SetRollRight(action != glfw.Release)
+	case glfw.KeyLeftShift:
+		man.SetUp(action != glfw.Release)
+	case glfw.KeyLeftAlt:
+		man.SetDown(action != glfw.Release)
 
 	case glfw.KeySpace:
 		goal1.Pickup(man.Body)

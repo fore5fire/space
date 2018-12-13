@@ -24,8 +24,13 @@ type Body struct {
 	observerMut sync.RWMutex
 	observers   map[Observer]struct{}
 
-	ticker    *draw.Ticker
-	animators []*draw.Animator
+	velocityMut  sync.Mutex
+	lastVelocity mgl32.Vec3
+	velocity     mgl32.Vec3
+	angularV     mgl32.Quat
+	lastAngularV mgl32.Quat
+	ticker       *draw.Ticker
+	animators    []*draw.Animator
 }
 
 // AddObserver adds an observer to b. o.BodyUpdated will be called whenever b is updated.
@@ -141,4 +146,41 @@ func (b *Body) notifyRotation() {
 	for o := range b.observers {
 		o.BodyRotated(b)
 	}
+}
+
+func (b *Body) SetVelocity(velocity mgl32.Vec3) {
+	b.velocityMut.Lock()
+	b.velocity = velocity
+	b.velocityMut.Unlock()
+}
+
+func (b *Body) GetVelocity() mgl32.Vec3 {
+	b.velocityMut.Lock()
+	defer b.velocityMut.Unlock()
+	return b.velocity
+}
+
+func (b *Body) SetAngularV(angularV mgl32.Quat) {
+	b.velocityMut.Lock()
+	b.angularV = angularV
+	b.velocityMut.Unlock()
+}
+
+func (b *Body) GetAngularV() mgl32.Quat {
+	b.velocityMut.Lock()
+	defer b.velocityMut.Unlock()
+	return b.angularV
+}
+
+func (b *Body) velocityTick(elapsed float32) {
+	b.velocityMut.Lock()
+
+	b.Translate(b.velocity.Add(b.lastVelocity).Mul(elapsed / 2))
+	b.lastVelocity = b.velocity
+
+	angularV := mgl32.QuatNlerp(b.angularV, b.lastAngularV, 0.5)
+	b.Rotate(mgl32.QuatNlerp(mgl32.QuatIdent(), angularV, elapsed))
+	b.lastAngularV = b.angularV
+
+	b.velocityMut.Unlock()
 }

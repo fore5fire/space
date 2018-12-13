@@ -91,18 +91,18 @@ func (a *Animator) calcBone(bone gombz.Bone, last int, anim gombz.Animation) (mg
 		if len(channel.RotationKeys) > last {
 			rot = channel.RotationKeys[last].Key
 		} else {
-			log.Println(bone.Name, "missing rot key", last)
+			// log.Println(bone.Name, "missing rot key", last)
 		}
 		var pos, scale mgl32.Vec3
 		if len(channel.PositionKeys) > last {
 			pos = channel.PositionKeys[last].Key
 		} else {
-			log.Println(bone.Name, "missing pos key", last)
+			// log.Println(bone.Name, "missing pos key", last)
 		}
 		if len(channel.ScaleKeys) > last {
 			scale = channel.ScaleKeys[last].Key
 		} else {
-			log.Println(bone.Name, "missing scale key", last)
+			// log.Println(bone.Name, "missing scale key", last)
 		}
 
 		local = mgl32.Translate3D(pos.Elem()).
