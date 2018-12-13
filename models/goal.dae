@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+  <asset><contributor><author></author><authoring_tool>FBX COLLADA exporter</authoring_tool><comments></comments></contributor><created>2018-12-13T04:36:30Z</created><keywords></keywords><modified>2018-12-13T04:36:30Z</modified><revision></revision><subject></subject><title></title><unit meter="0.010000" name="centimeter"></unit><up_axis>Y_UP</up_axis></asset>
+  <library_materials>
+    <material id="phong2" name="phong2">
+      <instance_effect url="#phong2-fx"/>
+    </material>
+  </library_materials>
+  <library_effects>
+    <effect id="phong2-fx" name="phong2">
+      <profile_COMMON>
+        <technique sid="standard">
+          <phong>
+            <emission>
+              <color sid="emission">0.000000  0.000000 0.000000 1.000000</color>
+            </emission>
+            <ambient>
+              <color sid="ambient">0.000000  0.000000 0.000000 1.000000</color>
+            </ambient>
+            <diffuse>
+              <color sid="diffuse">0.400000  0.400000 0.400000 1.000000</color>
+            </diffuse>
+            <specular>
+              <color sid="specular">0.500000  0.500000 0.500000 1.000000</color>
+            </specular>
+            <shininess>
+              <float sid="shininess">20.000000</float>
+            </shininess>
+            <reflective>
+              <color sid="reflective">0.000000  0.000000 0.000000 1.000000</color>
+            </reflective>
+            <reflectivity>
+              <float sid="reflectivity">0.500000</float>
+            </reflectivity>
+            <transparent opaque="RGB_ZERO">
+              <color sid="transparent">0.000000  0.000000 0.000000 1.000000</color>
+            </transparent>
+            <transparency>
+              <float sid="transparency">1.000000</float>
+            </transparency>
+          </phong>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_geometries>
+    <geometry id="pPlatonic1-lib" name="pPlatonic1Mesh">
+      <mesh>
+        <source id="pPlatonic1-POSITION">
+          <float_array id="pPlatonic1-POSITION-array" count="36">
+0.000000 0.000000 -1.000000
+0.723607 0.525731 -0.447214
+-0.276393 0.850651 -0.447214
+-0.894427 -0.000000 -0.447214
+-0.276393 -0.850651 -0.447214
+0.723607 -0.525731 -0.447214
+0.894427 0.000000 0.447214
+0.276393 0.850651 0.447214
+-0.723607 0.525731 0.447214
+-0.723607 -0.525731 0.447214
+0.276393 -0.850651 0.447214
+0.000000 0.000000 1.000000
+</float_array>
+          <technique_common>
+            <accessor source="#pPlatonic1-POSITION-array" count="12" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="pPlatonic1-Normal0">
+          <float_array id="pPlatonic1-Normal0-array" count="180">
+0.187593 0.577350 -0.794654
+0.187593 0.577350 -0.794655
+0.187593 0.577350 -0.794654
+-0.491123 0.356822 -0.794654
+-0.491123 0.356822 -0.794654
+-0.491123 0.356822 -0.794654
+-0.491123 -0.356822 -0.794654
+-0.491123 -0.356822 -0.794654
+-0.491123 -0.356822 -0.794654
+0.187592 -0.577350 -0.794654
+0.187592 -0.577350 -0.794654
+0.187592 -0.577350 -0.794654
+0.607062 -0.000000 -0.794654
+0.607062 -0.000000 -0.794654
+0.607062 -0.000000 -0.794654
+0.303531 0.934172 -0.187593
+0.303531 0.934172 -0.187593
+0.303531 0.934172 -0.187593
+-0.794655 0.577350 -0.187592
+-0.794654 0.577350 -0.187592
+-0.794654 0.577350 -0.187592
+-0.794654 -0.577350 -0.187592
+-0.794654 -0.577350 -0.187592
+-0.794654 -0.577350 -0.187592
+0.303531 -0.934172 -0.187593
+0.303531 -0.934172 -0.187593
+0.303531 -0.934172 -0.187593
+0.982247 0.000000 -0.187593
+0.982247 0.000000 -0.187593
+0.982247 0.000000 -0.187593
+0.794654 0.577350 0.187592
+0.794654 0.577350 0.187592
+0.794654 0.577350 0.187592
+-0.303531 0.934172 0.187593
+-0.303531 0.934172 0.187593
+-0.303531 0.934172 0.187593
+-0.982247 0.000000 0.187593
+-0.982247 0.000000 0.187593
+-0.982247 0.000000 0.187593
+-0.303531 -0.934172 0.187592
+-0.303531 -0.934172 0.187592
+-0.303531 -0.934172 0.187592
+0.794655 -0.577350 0.187592
+0.794655 -0.577350 0.187592
+0.794655 -0.577350 0.187592
+0.491123 0.356822 0.794654
+0.491123 0.356822 0.794654
+0.491123 0.356822 0.794655
+-0.187592 0.577350 0.794654
+-0.187593 0.577350 0.794654
+-0.187593 0.577350 0.794654
+-0.607062 -0.000000 0.794654
+-0.607062 -0.000000 0.794655
+-0.607062 -0.000000 0.794654
+-0.187592 -0.577350 0.794654
+-0.187592 -0.577350 0.794654
+-0.187592 -0.577350 0.794654
+0.491123 -0.356822 0.794654
+0.491123 -0.356822 0.794654
+0.491123 -0.356822 0.794655
+</float_array>
+          <technique_common>
+            <accessor source="#pPlatonic1-Normal0-array" count="60" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="pPlatonic1-UV0">
+          <float_array id="pPlatonic1-UV0-array" count="30">
+1.000000 0.500000
+0.838104 0.676208
+0.088104 0.823792
+0.176208 0.500000
+0.088104 0.176208
+0.838104 0.323792
+0.676208 0.500000
+0.588104 0.823792
+0.338104 0.676208
+0.338104 0.323792
+0.588104 0.176208
+0.500000 0.500000
+1.088104 0.823792
+1.176208 0.500000
+1.088104 0.176208
+</float_array>
+          <technique_common>
+            <accessor source="#pPlatonic1-UV0-array" count="15" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="pPlatonic1-VERTEX">
+          <input semantic="POSITION" source="#pPlatonic1-POSITION"/>
+        </vertices>
+        <triangles count="20" material="phong2"><input semantic="VERTEX" offset="0" source="#pPlatonic1-VERTEX"/><input semantic="NORMAL" offset="1" source="#pPlatonic1-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#pPlatonic1-UV0"/><p> 0 0 0 2 1 12 1 2 1 0 3 0 3 4 13 2 5 12 0 6 0 4 7 14 3 8 13 0 9 0 5 10 5 4 11 14 0 12 0 1 13 1 5 14 5 1 15 1 2 16 12 7 17 7 2 18 2 3 19 3 8 20 8 3 21 3 4 22 4 9 23 9 4 24 14 5 25 5 10 26 10 5 27 5 1 28 1 6 29 6 1 30 1 7 31 7 6 32 6 2 33 2 8 34 8 7 35 7 3 36 3 9 37 9 8 38 8 4 39 4 10 40 10 9 41 9 5 42 5 6 43 6 10 44 10 6 45 6 7 46 7 11 47 11 7 48 7 8 49 8 11 50 11 8 51 8 9 52 9 11 53 11 9 54 9 10 55 10 11 56 11 10 57 10 6 58 6 11 59 11</p></triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_visual_scenes>
+    <visual_scene id="goal" name="goal">
+      <node name="pPlatonic1" id="pPlatonic1" sid="pPlatonic1"><matrix sid="matrix">1.355583 0.000000 0.000000 0.000000 0.000000 1.355583 0.000000 0.000000 0.000000 0.000000 1.355583 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#pPlatonic1-lib"><bind_material><technique_common><instance_material symbol="phong2" target="#phong2"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
+      <node name="place3dTexture1" id="place3dTexture1" sid="place3dTexture1"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
+      <node name="place3dTexture2" id="place3dTexture2" sid="place3dTexture2"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
+      <node name="place3dTexture3" id="place3dTexture3" sid="place3dTexture3"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
+      <extra><technique profile="MAX3D"><frame_rate>24.000000</frame_rate></technique><technique profile="FCOLLADA"><start_time>0.041667</start_time><end_time>8.333333</end_time></technique></extra>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#goal"></instance_visual_scene>
+  </scene>
+</COLLADA>

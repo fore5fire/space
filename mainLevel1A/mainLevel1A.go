@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"runtime"
 	"time"
@@ -24,8 +25,11 @@ func init() {
 var bot *models.Robot
 var cam *univ.ChaseCam
 var man *models.Astronaut
+var goal1 *models.Goal
+var goal2 *models.Goal
 
 func main() {
+
 	window := draw.NewWindow(1000, 1000)
 	u = univ.NewUniverse(window, time.Millisecond*10)
 	man = models.NewAstronaut(u)
@@ -39,6 +43,14 @@ func main() {
 	ship.SetLocation(mgl32.Vec3{-10, 5, 0})
 	defer ship.Remove()
 
+	goal1 := models.NewGoal(u)
+	goal1.SetLocation(mgl32.Vec3{95, 7, 337})
+	defer goal1.Remove()
+
+	goal2 := models.NewGoal(u)
+	goal2.SetLocation(mgl32.Vec3{254, -6, 13})
+	defer goal2.Remove()
+
 	cam = univ.NewChaseCam(man.Body)
 	cam.SetLocation(mgl32.Vec3{0, 2, -10})
 	defer cam.Remove()
@@ -47,6 +59,7 @@ func main() {
 }
 
 func HandleKey(w *glfw.Window, key glfw.Key, scanCode int, action glfw.Action, modifier glfw.ModifierKey) {
+	fmt.Println(man.GetLocation())
 	switch key {
 	case glfw.KeyLeft:
 		man.Rotate(mgl32.QuatRotate(.1, mgl32.Vec3{0, 1, 0}))
@@ -65,7 +78,12 @@ func HandleKey(w *glfw.Window, key glfw.Key, scanCode int, action glfw.Action, m
 		man.StepForward()
 	case glfw.KeyS:
 		man.StepBack()
+
+	case glfw.KeySpace:
+		goal1.Pickup(man.Body)
+		goal2.Pickup(man.Body)
 	}
+
 }
 func HandleMouseButton(w *glfw.Window, button glfw.MouseButton, action glfw.Action, modifier glfw.ModifierKey) {
 	log.Println("Handle mouse button")
