@@ -34,11 +34,12 @@ func main() {
 	level1 := models.NewLevel1A(u)
 	defer level1.Remove()
 
-	bot = models.NewRobot(u)
-	defer bot.Remove()
+	// bot = models.NewRobot(u)
+	// defer bot.Remove()
 
 	cam = univ.NewChaseCam(man.Body)
-	cam.SetLocation(mgl32.Vec3{5, 5, -5})
+	cam.SetLocation(mgl32.Vec3{0, 2, -10})
+	defer cam.Remove()
 
 	window.Loop(HandleKey, HandleMouseButton, HandleCursor)
 }
@@ -46,22 +47,22 @@ func main() {
 func HandleKey(w *glfw.Window, key glfw.Key, scanCode int, action glfw.Action, modifier glfw.ModifierKey) {
 	switch key {
 	case glfw.KeyLeft:
-		cam.Translate(mgl32.Vec3{0.2, 0, 0})
+		man.Rotate(mgl32.QuatRotate(.1, mgl32.Vec3{0, 1, 0}))
 	case glfw.KeyRight:
-		cam.Translate(mgl32.Vec3{-0.2, 0, 0})
+		man.Rotate(mgl32.QuatRotate(-.1, mgl32.Vec3{0, 1, 0}))
 	case glfw.KeyUp:
-		cam.Translate(mgl32.Vec3{0, 0, 0.2})
+		cam.Translate(mgl32.Vec3{0, 0.2, 0})
 	case glfw.KeyDown:
-		cam.Translate(mgl32.Vec3{0, 0, -0.2})
+		cam.Translate(mgl32.Vec3{0, -0.2, 0})
 
 	case glfw.KeyA:
-		man.Translate(mgl32.Vec3{0.2, 0, 0})
+		man.StepLeft()
 	case glfw.KeyD:
-		man.Translate(mgl32.Vec3{-0.2, 0, 0})
+		man.StepRight()
 	case glfw.KeyW:
-		man.Translate(mgl32.Vec3{0, 0, 0.2})
+		man.StepForward()
 	case glfw.KeyS:
-		man.Translate(mgl32.Vec3{0, 0, -0.2})
+		man.StepBack()
 	}
 }
 func HandleMouseButton(w *glfw.Window, button glfw.MouseButton, action glfw.Action, modifier glfw.ModifierKey) {

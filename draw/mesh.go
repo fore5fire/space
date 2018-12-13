@@ -81,7 +81,7 @@ func (m *Mesh) SetTexture(texture *Texture) {
 
 func (m *Mesh) Draw(state *GLState) {
 
-	transform := m.rotation.Normalize().Mat4().Mul4(mgl32.Translate3D(m.position.Elem()))
+	transform := mgl32.Translate3D(m.position.Elem()).Mul4(m.rotation.Normalize().Mat4())
 
 	// Set Model Transform
 	gl.UniformMatrix4fv(m.program.ModelID, 1, false, &transform[0])

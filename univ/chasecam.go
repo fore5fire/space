@@ -9,7 +9,9 @@ import (
 // ChaseCam is a camera that keeps a relative location to a body.
 type ChaseCam struct {
 	locMut   sync.RWMutex
+	rotMut   sync.RWMutex
 	location mgl32.Vec3
+	rotation mgl32.Quat
 	target   *Body
 	ticker   *Ticker
 }
@@ -24,16 +26,20 @@ func NewChaseCam(target *Body) *ChaseCam {
 	return cam
 }
 
-// Destroy stops the camera from updating. Always call Destroy on ChaseCams that are no longer needed.
-func (cam *ChaseCam) Destroy() {
+// Remove stops the camera from updating. Always call Remove on ChaseCams that are no longer needed.
+func (cam *ChaseCam) Remove() {
 	cam.ticker.Close()
 }
 
 func (cam *ChaseCam) tick(elapsed float32) {
-	loc := cam.target.GetLocation().Add(cam.location)
-	// rot := cam.target.GetRotation().Mul(cam.rotation)
-	transform := mgl32.LookAtV(loc, cam.target.GetLocation(), mgl32.Vec3{0, 1, 0})
-	// transform := mgl32.Translate3D(loc.Elem()).Mul4(rot.Normalize().Mat4())
+	// set the position of the camera and the look at point as relative positions to the direction and position of the target
+	rot := cam.target.GetRotation()
+	lookAtMat := mgl32.Translate3D(cam.target.GetLocation().Elem())
+	lookAtMatRot := lookAtMat.Mul4(rot.Normalize().Mat4())
+	lookAt := lookAtMatRot.Mul4(mgl32.Translate3D(0.0, 0.0, 5.0)).Col(3).Vec3()
+	lookFrom := lookAtMatRot.Mul4(mgl32.Translate3D(cam.location.Elem())).Col(3).Vec3()
+
+	transform := mgl32.LookAtV(lookFrom, lookAt, mgl32.Vec3{0, 1, 0})
 	cam.target.program.SetView(transform)
 }
 
@@ -58,23 +64,23 @@ func (cam *ChaseCam) SetLocation(loc mgl32.Vec3) {
 	cam.locMut.Unlock()
 }
 
-// // GetRotation gets the rotation of b
-// func (cam *ChaseCam) GetRotation() mgl32.Quat {
-// 	cam.rotMut.RLock()
-// 	defer cam.rotMut.RUnlock()
-// 	return cam.rotation
-// }
+// GetRotation gets the rotation of b
+func (cam *ChaseCam) GetRotation() mgl32.Quat {
+	cam.rotMut.RLock()
+	defer cam.rotMut.RUnlock()
+	return cam.rotation
+}
 
-// // Rotate rotates b by offset
-// func (cam *ChaseCam) Rotate(offset mgl32.Quat) {
-// 	cam.rotMut.Lock()
-// 	cam.rotation = cam.rotation.Mul(offset)
-// 	cam.rotMut.Unlock()
-// }
+// Rotate rotates b by offset
+func (cam *ChaseCam) Rotate(offset mgl32.Quat) {
+	cam.rotMut.Lock()
+	cam.rotation = cam.rotation.Mul(offset)
+	cam.rotMut.Unlock()
+}
 
-// // SetRotation sets the rotation of b to rot
-// func (cam *ChaseCam) SetRotation(rot mgl32.Quat) {
-// 	cam.rotMut.Lock()
-// 	cam.rotation = rot
-// 	cam.rotMut.Unlock()
-// }
+// SetRotation sets the rotation of b to rot
+func (cam *ChaseCam) SetRotation(rot mgl32.Quat) {
+	cam.rotMut.Lock()
+	cam.rotation = rot
+	cam.rotMut.Unlock()
+}
