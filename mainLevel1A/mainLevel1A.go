@@ -2,9 +2,13 @@ package main
 
 import (
 	"log"
+	"os"
 	"runtime"
 	"time"
 
+	"github.com/faiface/beep"
+	"github.com/faiface/beep/speaker"
+	"github.com/faiface/beep/wav"
 	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/lsmith130/space/draw"
@@ -24,17 +28,36 @@ func init() {
 var bot *models.Robot
 var cam *univ.ChaseCam
 var man *models.Astronaut
+var goal1 *models.Goal
+var goal2 *models.Goal
 
 func main() {
 	window := draw.NewWindow(1000, 1000)
+	f, _ := os.Open("audio/bg_music.wav")
+	s0, format, _ := wav.Decode(f)
+	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/20))
+	s0p := beep.Loop(-1, s0)
+	speaker.Play(s0p)
+
 	u = univ.NewUniverse(window, time.Millisecond*10)
 	man = models.NewAstronaut(u)
-	man.SetLocation(mgl32.Vec3{27, 25, 119})
-	man.SetRotation(mgl32.QuatRotate(20, mgl32.Vec3{0, 1, 0}))
+	man.SetLocation(mgl32.Vec3{0, 2, 0})
 	defer man.Remove()
 
 	level1 := models.NewLevel1A(u)
 	defer level1.Remove()
+
+	ship := models.NewShip(u)
+	ship.SetLocation(mgl32.Vec3{-10, 5, 0})
+	defer ship.Remove()
+
+	goal1 = models.NewGoal(u)
+	goal1.SetLocation(mgl32.Vec3{95, 7, 337})
+	defer goal1.Remove()
+
+	goal2 = models.NewGoal(u)
+	goal2.SetLocation(mgl32.Vec3{254, -6, 13})
+	defer goal2.Remove()
 
 	cam = univ.NewChaseCam(man.Body, u.Window)
 	cam.SetLocation(mgl32.Vec3{0, 2, -10})
@@ -44,6 +67,10 @@ func main() {
 }
 
 func HandleKey(w *glfw.Window, key glfw.Key, scanCode int, action glfw.Action, modifier glfw.ModifierKey) {
+	if action == 1 {
+		return
+	}
+
 	switch key {
 	case glfw.KeyLeft:
 		man.Rotate(mgl32.QuatRotate(.1, mgl32.Vec3{0, 1, 0}))
@@ -62,7 +89,12 @@ func HandleKey(w *glfw.Window, key glfw.Key, scanCode int, action glfw.Action, m
 		man.StepForward()
 	case glfw.KeyS:
 		man.StepBack()
+
+	case glfw.KeySpace:
+		goal1.Pickup(man.Body)
+		goal2.Pickup(man.Body)
 	}
+
 }
 func HandleMouseButton(w *glfw.Window, button glfw.MouseButton, action glfw.Action, modifier glfw.ModifierKey) {
 	log.Println("Handle mouse button")

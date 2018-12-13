@@ -2,7 +2,11 @@ package models
 
 import (
 	"log"
+	"os"
 
+	"github.com/faiface/beep"
+	"github.com/faiface/beep/speaker"
+	"github.com/faiface/beep/wav"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/lsmith130/space/draw"
 	"github.com/lsmith130/space/univ"
@@ -10,7 +14,8 @@ import (
 
 type Astronaut struct {
 	*univ.Body
-	u *univ.Universe
+	u            *univ.Universe
+	walkingSound beep.StreamSeekCloser
 }
 
 func NewAstronaut(u *univ.Universe) *Astronaut {
@@ -36,6 +41,9 @@ func (m *Astronaut) Remove() {
 }
 
 func (m *Astronaut) StepForward() {
+	f1, _ := os.Open("audio/walking.wav")
+	s, _, _ := wav.Decode(f1)
+	speaker.Play(s)
 	rot := m.Body.GetRotation().Rotate(mgl32.Vec3{0, 0, 1})
 	m.Translate(mgl32.Vec3{rot.X(), 0, rot.Z()})
 }
