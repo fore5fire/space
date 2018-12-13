@@ -2,15 +2,18 @@ package main
 
 import (
 	"log"
+	"os"
 	"runtime"
 	"time"
 
+	"github.com/faiface/beep"
+	"github.com/faiface/beep/speaker"
+	"github.com/faiface/beep/wav"
 	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/lsmith130/space/draw"
 	"github.com/lsmith130/space/models"
 	"github.com/lsmith130/space/univ"
-	// "github.com/faiface/beep/wav"
 )
 
 const windowWidth = 800
@@ -29,8 +32,13 @@ var goal1 *models.Goal
 var goal2 *models.Goal
 
 func main() {
-
 	window := draw.NewWindow(1000, 1000)
+	f, _ := os.Open("audio/bg_music.wav")
+	s0, format, _ := wav.Decode(f)
+	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/20))
+	s0p := beep.Loop(-1, s0)
+	speaker.Play(s0p)
+
 	u = univ.NewUniverse(window, time.Millisecond*10)
 	man = models.NewAstronaut(u)
 	man.SetLocation(mgl32.Vec3{0, 2, 0})

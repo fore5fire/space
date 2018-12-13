@@ -5,7 +5,10 @@ import (
 
 	"fmt"
 	"log"
+	"os"
 
+	"github.com/faiface/beep/speaker"
+	"github.com/faiface/beep/wav"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/lsmith130/space/draw"
 	"github.com/lsmith130/space/univ"
@@ -41,11 +44,19 @@ func (goal *Goal) Pickup(t *univ.Body) {
 
 	if t.GetLocation().Sub(goal.Body.GetLocation()).Len() < 10 {
 		if goal.target == nil {
+			f1, _ := os.Open("audio/pickup.wav")
+			s, _, _ := wav.Decode(f1)
+			speaker.Play(s)
+
 			fmt.Println("Pick up")
 			goal.target = t
 			t.AddObserver(goal)
 			goal.update()
 		} else {
+			f1, _ := os.Open("audio/putdown.wav")
+			s, _, _ := wav.Decode(f1)
+			speaker.Play(s)
+
 			fmt.Println("Set down")
 			goal.target.RemoveObserver(goal)
 			goal.target = nil

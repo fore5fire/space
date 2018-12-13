@@ -1,10 +1,12 @@
 module github.com/lsmith130/space
 
 require (
-	github.com/faiface/beep v0.0.0-20181006150002-186a1b19424c // indirect
+	github.com/faiface/beep v0.0.0-20181006150002-186a1b19424c
 	github.com/go-gl/gl v0.0.0-20181026044259-55b76b7df9d2
 	github.com/go-gl/glfw v0.0.0-20181014061658-691ee1b84c51
 	github.com/go-gl/mathgl v0.0.0-20180804195959-cdf14b6b8f8a
+	github.com/hajimehoshi/go-mp3 v0.1.1 // indirect
+	github.com/hajimehoshi/oto v0.2.1 // indirect
 	github.com/pkg/errors v0.8.0 // indirect
 	github.com/tbogdala/assimp-go v0.0.0-20160907223021-d10e2135f9fe
 	github.com/tbogdala/gombz v0.0.0-20160813021445-aee583525334
