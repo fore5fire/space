@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/lsmith130/space/draw"
 	"github.com/lsmith130/space/univ"
 )
@@ -13,6 +14,7 @@ import (
 type Goal struct {
 	*univ.Body
 	u      *univ.Universe
+	target *univ.Body
 	ticker *univ.Ticker
 }
 
@@ -35,11 +37,44 @@ func NewGoal(u *univ.Universe) *Goal {
 
 }
 
-func (r *Goal) Pickup(target *univ.Body) {
-	fmt.Println(target.GetLocation())
-	fmt.Println(r.Body.GetLocation())
+func (goal *Goal) Pickup(t *univ.Body) {
+
+	if t.GetLocation().Sub(goal.Body.GetLocation()).Len() < 10 {
+		if goal.target == nil {
+			fmt.Println("Pick up")
+			goal.target = t
+			t.AddObserver(goal)
+			goal.update()
+		} else {
+			fmt.Println("Set down")
+			goal.target.RemoveObserver(goal)
+			goal.target = nil
+		}
+	} else {
+		fmt.Println("Can't pick up")
+	}
 }
 
 func (r *Goal) Remove() {
 	r.u.RemoveBody(r.Body)
+}
+
+// BodyTranslated conforms to Observer.BodyTranslated and should not be called directly
+func (goal *Goal) BodyTranslated(b *univ.Body) {
+	goal.update()
+}
+
+// BodyRotated conforms to Observer.BodyRotated and should not be called directly
+func (goal *Goal) BodyRotated(b *univ.Body) {
+	goal.update()
+}
+
+func (goal *Goal) update() {
+	rot := goal.target.GetRotation()
+	posMat := mgl32.Translate3D(goal.target.GetLocation().Elem())
+	posRot := posMat.Mul4(rot.Normalize().Mat4())
+	pos := posRot.Mul4(mgl32.Translate3D(0.0, 0.0, -1.0)).Col(3).Vec3()
+
+	goal.Body.SetRotation(rot)
+	goal.Body.SetLocation(pos)
 }

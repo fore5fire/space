@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"runtime"
 	"time"
@@ -11,6 +10,7 @@ import (
 	"github.com/lsmith130/space/draw"
 	"github.com/lsmith130/space/models"
 	"github.com/lsmith130/space/univ"
+	// "github.com/faiface/beep/wav"
 )
 
 const windowWidth = 800
@@ -43,11 +43,11 @@ func main() {
 	ship.SetLocation(mgl32.Vec3{-10, 5, 0})
 	defer ship.Remove()
 
-	goal1 := models.NewGoal(u)
+	goal1 = models.NewGoal(u)
 	goal1.SetLocation(mgl32.Vec3{95, 7, 337})
 	defer goal1.Remove()
 
-	goal2 := models.NewGoal(u)
+	goal2 = models.NewGoal(u)
 	goal2.SetLocation(mgl32.Vec3{254, -6, 13})
 	defer goal2.Remove()
 
@@ -59,7 +59,10 @@ func main() {
 }
 
 func HandleKey(w *glfw.Window, key glfw.Key, scanCode int, action glfw.Action, modifier glfw.ModifierKey) {
-	fmt.Println(man.GetLocation())
+	if action == 1 {
+		return
+	}
+
 	switch key {
 	case glfw.KeyLeft:
 		man.Rotate(mgl32.QuatRotate(.1, mgl32.Vec3{0, 1, 0}))

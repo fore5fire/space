@@ -1,9 +1,13 @@
+github.com/faiface/beep v0.0.0-20181006150002-186a1b19424c h1:zpnxPI/dTQVcu40VQpB74yZZ3I9NfwBh6DkOTpxv0Cs=
+github.com/faiface/beep v0.0.0-20181006150002-186a1b19424c/go.mod h1:A22Xnws4HqzY9DZEtQCbYRbS1858XfgH6SCFUeRiXDI=
 github.com/go-gl/gl v0.0.0-20181026044259-55b76b7df9d2 h1:78Hza2KHn2PX1jdydQnffaU2A/xM0g3Nx1xmMdep9Gk=
 github.com/go-gl/gl v0.0.0-20181026044259-55b76b7df9d2/go.mod h1:482civXOzJJCPzJ4ZOX/pwvXBWSnzD4OKMdH4ClKGbk=
 github.com/go-gl/glfw v0.0.0-20181014061658-691ee1b84c51 h1:elGSwayRx7uAsfA5PnVKeTHh+AVsUTmas0CkHOw/DSk=
 github.com/go-gl/glfw v0.0.0-20181014061658-691ee1b84c51/go.mod h1:vR7hzQXu2zJy9AVAgeJqvqgH9Q5CA+iKCZ2gyEVpxRU=
 github.com/go-gl/mathgl v0.0.0-20180804195959-cdf14b6b8f8a h1:2n5w2v3knlspzjJWyQPC0j88Mwvq0SZV0Jdws34GJwc=
 github.com/go-gl/mathgl v0.0.0-20180804195959-cdf14b6b8f8a/go.mod h1:dvrdneKbyWbK2skTda0nM4B9zSlS2GZSnjX7itr/skQ=
+github.com/pkg/errors v0.8.0 h1:WdK/asTD0HN+q6hsWO3/vpuAkAr+tw6aNJNDFFf0+qw=
+github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/tbogdala/assimp-go v0.0.0-20160907223021-d10e2135f9fe h1:mBZmX9XGO1relREx0W++w2pmhjxUNzhfsmNF6QFXWDw=
 github.com/tbogdala/assimp-go v0.0.0-20160907223021-d10e2135f9fe/go.mod h1:HByjHGhnAPqTBrdvTzJ5Qb+e/VVJsYhE8akdO4EA5nA=
 github.com/tbogdala/gombz v0.0.0-20160813021445-aee583525334 h1:f85vtLnNN5eUyFN/z82Sfuqc3H/LCMshnL8VqU1qUuM=
