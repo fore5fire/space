@@ -11,14 +11,13 @@ in vec3 fragPosition;
 
 out vec4 outputColor;
 
-const float shininess = 3.0;
+const float shininess = 0.5;
 const vec3 lightColor = vec3(1, 1, 1);
 const vec3 lightPosition = vec3(0,100,0);
 const float lightPower = 40.0;
 const vec3 ambientColor = vec3(0.4,0.4,0.4);
-const vec3 diffuseColor = vec3(0.6, 0.6, 0.6);
+const vec3 diffuseColor = vec3(0.4, 0.4, 0.4);
 const vec3 specColor = vec3(0.4,0.4,0.4);
-const float phongExponent = 1;
 
 void main() {
   vec3 color = texture(tex, vec2(fragTexCoord.x, 1.0-fragTexCoord.y)).rgb;
@@ -39,5 +38,5 @@ void main() {
   vec3 diffuse = lambertian * color;
   vec3 specular = specColor * spec;
   
-  outputColor = vec4(ambient + diffuse + specular, 1);
+  outputColor = vec4(max(diffuse, ambient), 1);
 }

@@ -23,7 +23,7 @@ func NewLevel1A(u *univ.Universe) *Level1A {
 		log.Fatal(err)
 	}
 
-	b, err := u.NewBody("models/game.dae", draw.ProgramTypeStandard, []*draw.Texture{tex, metal, metal, tex, metal})
+	b, err := u.NewBody("models/game.dae", u.Window.GetStandardProgram(), []*draw.Texture{tex, metal, metal, tex, metal})
 	if err != nil {
 		log.Fatal(err)
 	}

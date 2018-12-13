@@ -14,13 +14,13 @@ type FreeCam struct {
 	rotation mgl32.Quat
 	ticker   *Ticker
 
-	program *draw.Program
+	window *draw.Window
 }
 
 // NewFreeCam creates a new FreeCam with the specified target and update interval.
-func NewFreeCam(u *Universe, programType draw.ProgramType) *FreeCam {
+func NewFreeCam(w *draw.Window, window *draw.Window) *FreeCam {
 	cam := &FreeCam{
-		program: u.window.GetProgram(programType),
+		window: window,
 	}
 	cam.ticker = NewTicker(DefaultRefreshRate, cam.tick)
 	cam.ticker.Start()
@@ -35,7 +35,7 @@ func (cam *FreeCam) Destroy() {
 func (cam *FreeCam) tick(elapsed float32) {
 	cam.mut.Lock()
 	transform := cam.rotation.Normalize().Mat4().Mul4(mgl32.Translate3D(cam.location.Elem()))
-	cam.program.SetView(transform)
+	cam.window.SetView(transform, cam.location)
 	cam.mut.Unlock()
 }
 

@@ -32,7 +32,7 @@ func NewShip(u *univ.Universe) *Ship {
 		log.Fatal(err)
 	}
 
-	b, err := u.NewBody("models/ship.dae", draw.ProgramTypeStandard, []*draw.Texture{booster, body})
+	b, err := u.NewBody("models/ship.dae", u.Window.GetStandardProgram(), []*draw.Texture{booster, body})
 	if err != nil {
 		log.Fatal(err)
 	}

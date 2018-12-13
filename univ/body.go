@@ -13,7 +13,7 @@ import (
 // All body functions are safe to use concurrently.
 type Body struct {
 	meshes  []*draw.Mesh
-	program *draw.Program
+	program draw.Program
 	// observerMut sync.RWMutex
 	// observers   map[Observer]struct{}
 	locMut   sync.RWMutex
@@ -21,27 +21,26 @@ type Body struct {
 	location mgl32.Vec3
 	rotation mgl32.Quat
 
+	observerMut sync.RWMutex
+	observers   map[Observer]struct{}
+
 	ticker *Ticker
 }
 
-// // AddObserver adds an observer to b. o.BodyUpdated will be called whenever b is updated.
-// // If an observer is added to a body that it is already observing, AddObserver has no effect.
-// func (b *Body) AddObserver(o Observer) {
-// 	b.observerMut.Lock()
-// 	b.observers[o] = struct{}{}
-// 	b.observerMut.Unlock()
-// }
+// AddObserver adds an observer to b. o.BodyUpdated will be called whenever b is updated.
+// If an observer is added to a body that it is already observing, AddObserver has no effect.
+func (b *Body) AddObserver(o Observer) {
+	b.observerMut.Lock()
+	b.observers[o] = struct{}{}
+	b.observerMut.Unlock()
+}
 
-// // RemoveObserver removes an observer from b, such that o no longer recieves updates from b.
-// // If an observer is removed from a body that it is not observing, RemoveObserver has no effect.
-// func (b *Body) RemoveObserver(o Observer) {
-// 	b.observerMut.Lock()
-// 	delete(b.observers, o)
-// 	b.observerMut.Unlock()
-// }
-
-func (b *Body) Tick(elapsed float32) {
-
+// RemoveObserver removes an observer from b, such that o no longer recieves updates from b.
+// If an observer is removed from a body that it is not observing, RemoveObserver has no effect.
+func (b *Body) RemoveObserver(o Observer) {
+	b.observerMut.Lock()
+	delete(b.observers, o)
+	b.observerMut.Unlock()
 }
 
 // GetLocation returns the current location of b
@@ -61,6 +60,7 @@ func (b *Body) Translate(offset mgl32.Vec3) {
 	}
 
 	b.locMut.Unlock()
+	b.notifyTranslation()
 }
 
 // SetLocation sets the location of b
@@ -71,6 +71,7 @@ func (b *Body) SetLocation(loc mgl32.Vec3) {
 		m.SetLocation(loc)
 	}
 	b.locMut.Unlock()
+	b.notifyTranslation()
 }
 
 // GetRotation gets the rotation of b
@@ -88,6 +89,7 @@ func (b *Body) Rotate(offset mgl32.Quat) {
 		m.SetRotation(b.rotation)
 	}
 	b.rotMut.Unlock()
+	b.notifyRotation()
 }
 
 // SetRotation sets the rotation of b to rot
@@ -98,6 +100,7 @@ func (b *Body) SetRotation(rot mgl32.Quat) {
 		m.SetRotation(rot)
 	}
 	b.rotMut.Unlock()
+	b.notifyRotation()
 }
 
 // Draw draws b's meshes at the current location and rotation.
@@ -106,5 +109,35 @@ func (b *Body) SetRotation(rot mgl32.Quat) {
 func (b *Body) Draw(state *draw.GLState) {
 	for _, mesh := range b.meshes {
 		mesh.Draw(state)
+	}
+}
+
+func (b *Body) notifyTranslation() {
+	b.observerMut.Lock()
+	observers := make([]Observer, len(b.observers))
+	i := 0
+	for o := range b.observers {
+		observers[i] = o
+		i++
+	}
+	b.observerMut.Unlock()
+
+	for o := range b.observers {
+		o.BodyTranslated(b)
+	}
+}
+
+func (b *Body) notifyRotation() {
+	b.observerMut.Lock()
+	observers := make([]Observer, len(b.observers))
+	i := 0
+	for o := range b.observers {
+		observers[i] = o
+		i++
+	}
+	b.observerMut.Unlock()
+
+	for o := range b.observers {
+		o.BodyRotated(b)
 	}
 }

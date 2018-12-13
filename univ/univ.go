@@ -19,7 +19,7 @@ const DefaultRefreshRate = time.Millisecond * 16
 type Universe struct {
 	// bodies is a set of bodies
 	bodies map[*Body]struct{}
-	window *draw.Window
+	Window *draw.Window
 }
 
 // NewUniverse constructs a new empty Universe
@@ -27,14 +27,14 @@ func NewUniverse(window *draw.Window, updateRate time.Duration) *Universe {
 
 	u := &Universe{
 		bodies: make(map[*Body]struct{}),
-		window: window,
+		Window: window,
 	}
 
 	return u
 }
 
 // NewBody constructs a new body in u with a given model and shader
-func (u *Universe) NewBody(modelPath string, programType draw.ProgramType, textures []*draw.Texture) (*Body, error) {
+func (u *Universe) NewBody(modelPath string, program draw.Program, textures []*draw.Texture) (*Body, error) {
 
 	meshes, err := assimp.ParseFile(modelPath)
 	if err != nil {
@@ -45,19 +45,38 @@ func (u *Universe) NewBody(modelPath string, programType draw.ProgramType, textu
 	}
 
 	body := &Body{
-		meshes:   make([]*draw.Mesh, len(meshes)),
-		rotation: mgl32.QuatIdent(),
-		program:  u.window.GetProgram(programType),
-	}
-	// log.Println(modelPath)
-	for i, mesh := range meshes {
-		log.Printf("%+v", mesh)
-		faces := *(*[]draw.MeshFace)(unsafe.Pointer(&mesh.Faces))
-		body.meshes[i] = body.program.NewMesh(mesh.Vertices, faces, mesh.UVChannels[0], mesh.Normals)
-		body.meshes[i].SetTexture(textures[i])
+		meshes:    make([]*draw.Mesh, len(meshes)),
+		rotation:  mgl32.QuatIdent(),
+		program:   program,
+		observers: make(map[Observer]struct{}),
 	}
 
-	body.program.AddDrawable(body)
+	switch program := program.(type) {
+	case *draw.BoneProgram:
+		for i, mesh := range meshes {
+			log.Println(mesh.UVChannels)
+			bones := make([]mgl32.Mat4, mesh.BoneCount)
+			for _, bone := range mesh.Bones {
+				bones[bone.Id] = bone.Transform
+			}
+
+			vertBones := make([]draw.VertBone, len(mesh.VertexWeightIds))
+			for i, ids := range mesh.VertexWeightIds {
+				vertBones[i] = draw.VertBone{int32(ids.X()), int32(ids.Y()), int32(ids.Z()), int32(ids.W())}
+			}
+
+			faces := *(*[]draw.MeshFace)(unsafe.Pointer(&mesh.Faces))
+			body.meshes[i] = program.NewMesh(mesh.Vertices, faces, mesh.UVChannels[0], mesh.Normals, vertBones, mesh.VertexWeights, bones)
+			body.meshes[i].SetTexture(textures[i])
+		}
+	case *draw.StandardProgram:
+		for i, mesh := range meshes {
+			faces := *(*[]draw.MeshFace)(unsafe.Pointer(&mesh.Faces))
+			body.meshes[i] = program.NewMesh(mesh.Vertices, faces, mesh.UVChannels[0], mesh.Normals)
+			body.meshes[i].SetTexture(textures[i])
+		}
+	}
+
 	u.bodies[body] = struct{}{}
 
 	return body, nil
@@ -65,6 +84,8 @@ func (u *Universe) NewBody(modelPath string, programType draw.ProgramType, textu
 
 // RemoveBody removes a body from u, such that it will no longer be drawn or recieve updates
 func (u *Universe) RemoveBody(body *Body) {
-	body.program.RemoveDrawable(body)
+	for _, mesh := range body.meshes {
+		body.program.RemoveMesh(mesh)
+	}
 	delete(u.bodies, body)
 }

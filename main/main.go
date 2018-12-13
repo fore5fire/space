@@ -36,7 +36,7 @@ func main() {
 	bot = models.NewRobot(u)
 	defer bot.Remove()
 
-	cam = univ.NewChaseCam(bot.Body)
+	cam = univ.NewChaseCam(bot.Body, u.Window)
 	cam.SetLocation(mgl32.Vec3{5, 5, 5})
 
 	// force := univ.NewLinearForce(bot2.Body, mgl32.Vec3{0.5, 0.5, 0.5})

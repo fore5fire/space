@@ -23,7 +23,7 @@ func NewGoal(u *univ.Universe) *Goal {
 		log.Fatal(err)
 	}
 
-	b, err := u.NewBody("models/goal.dae", draw.ProgramTypeStandard, []*draw.Texture{goal})
+	b, err := u.NewBody("models/goal.dae", u.Window.GetStandardProgram(), []*draw.Texture{goal})
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -51,7 +51,7 @@ func main() {
 	goal2.SetLocation(mgl32.Vec3{254, -6, 13})
 	defer goal2.Remove()
 
-	cam = univ.NewChaseCam(man.Body)
+	cam = univ.NewChaseCam(man.Body, u.Window)
 	cam.SetLocation(mgl32.Vec3{0, 2, -10})
 	defer cam.Remove()
 
