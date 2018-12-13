@@ -29,12 +29,15 @@ func main() {
 	window := draw.NewWindow(1000, 1000)
 	u = univ.NewUniverse(window, time.Millisecond*10)
 	man = models.NewAstronaut(u)
-	man.SetLocation(mgl32.Vec3{27, 25, 119})
-	man.SetRotation(mgl32.QuatRotate(20, mgl32.Vec3{0, 1, 0}))
+	man.SetLocation(mgl32.Vec3{0, 2, 0})
 	defer man.Remove()
 
 	level1 := models.NewLevel1A(u)
 	defer level1.Remove()
+
+	ship := models.NewShip(u)
+	ship.SetLocation(mgl32.Vec3{-10, 5, 0})
+	defer ship.Remove()
 
 	cam = univ.NewChaseCam(man.Body)
 	cam.SetLocation(mgl32.Vec3{0, 2, -10})

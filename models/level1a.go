@@ -13,12 +13,17 @@ type Level1A struct {
 }
 
 func NewLevel1A(u *univ.Universe) *Level1A {
-	tex, err := draw.NewTexture("models/level1a.png")
+	tex, err := draw.NewTexture("models/cement.jpg")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	b, err := u.NewBody("models/introlevel1.fbx", draw.ProgramTypeStandard, []*draw.Texture{tex, tex})
+	metal, err := draw.NewTexture("models/level1a.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	b, err := u.NewBody("models/game.dae", draw.ProgramTypeStandard, []*draw.Texture{tex, metal, metal, tex, metal})
 	if err != nil {
 		log.Fatal(err)
 	}
