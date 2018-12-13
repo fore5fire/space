@@ -113,7 +113,7 @@ func (w *Window) Loop(keyCallback glfw.KeyCallback, mouseButtonCallback glfw.Mou
 
 	var glState GLState
 
-	projection := mgl32.Perspective(mgl32.DegToRad(45.0), float32(w.GetWidth())/float32(w.GetHeight()), 0.1, 100.0)
+	projection := mgl32.Perspective(mgl32.DegToRad(45.0), float32(w.GetWidth())/float32(w.GetHeight()), 0.1, 500.0)
 
 	for !w.window.ShouldClose() {
 

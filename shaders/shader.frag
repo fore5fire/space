@@ -11,7 +11,7 @@ out vec4 outputColor;
 void main() {
 
   vec3 fragCamera = vec3(camera[3][0], camera[3][1], camera[3][2]);
-  
+
   vec3 lightPosition = vec3(0,-10,0);
   vec3 diffuseLightColor = vec3(0.8,0.8,0.8);
   vec3 specularObjectColor = vec3(0.8,0.8,0.8);
