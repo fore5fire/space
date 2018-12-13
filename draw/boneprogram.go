@@ -11,12 +11,13 @@ import (
 )
 
 type BoneProgram struct {
-	ID           uint32
-	ProjectionID int32
-	ModelID      int32
-	CameraID     int32
-	TextureID    int32
-	BonesID      int32
+	ID            uint32
+	ProjectionID  int32
+	ModelID       int32
+	CameraID      int32
+	TextureID     int32
+	BonesID       int32
+	CamPositionID int32
 
 	TextureLocID  uint32
 	VertexID      uint32
@@ -24,10 +25,11 @@ type BoneProgram struct {
 	VertBonesID   uint32
 	VertWeightsID uint32
 
-	view         mgl32.Mat4
-	projection   mgl32.Mat4
-	drawablesMut sync.Mutex
-	drawables    map[Drawable]struct{}
+	view        mgl32.Mat4
+	camPosition mgl32.Vec3
+	projection  mgl32.Mat4
+	meshesMut   sync.Mutex
+	meshes      map[*Mesh]struct{}
 }
 
 func newBoneProgram(vertShaderPath, fragShaderPath string) *BoneProgram {
@@ -75,12 +77,13 @@ func newBoneProgram(vertShaderPath, fragShaderPath string) *BoneProgram {
 	gl.DeleteShader(fragmentShader)
 
 	p := &BoneProgram{
-		ID:           id,
-		ProjectionID: gl.GetUniformLocation(id, gl.Str("projection\x00")),
-		CameraID:     gl.GetUniformLocation(id, gl.Str("camera\x00")),
-		ModelID:      gl.GetUniformLocation(id, gl.Str("model\x00")),
-		TextureID:    gl.GetUniformLocation(id, gl.Str("tex\x00")),
-		BonesID:      gl.GetUniformLocation(id, gl.Str("bones\x00")),
+		ID:            id,
+		ProjectionID:  gl.GetUniformLocation(id, gl.Str("projection\x00")),
+		CameraID:      gl.GetUniformLocation(id, gl.Str("camera\x00")),
+		ModelID:       gl.GetUniformLocation(id, gl.Str("model\x00")),
+		TextureID:     gl.GetUniformLocation(id, gl.Str("tex\x00")),
+		BonesID:       gl.GetUniformLocation(id, gl.Str("bones\x00")),
+		CamPositionID: gl.GetUniformLocation(id, gl.Str("camPosition\x00")),
 
 		VertexID:      uint32(gl.GetAttribLocation(id, gl.Str("vert\x00"))),
 		TextureLocID:  uint32(gl.GetAttribLocation(id, gl.Str("vertTexCoord\x00"))),
@@ -90,7 +93,7 @@ func newBoneProgram(vertShaderPath, fragShaderPath string) *BoneProgram {
 
 		projection: mgl32.Ident4(),
 		view:       mgl32.Ident4(),
-		drawables:  make(map[Drawable]struct{}),
+		meshes:     make(map[*Mesh]struct{}),
 	}
 
 	gl.Uniform1i(p.TextureID, 0)
@@ -103,24 +106,13 @@ func (p *BoneProgram) use() {
 	gl.UseProgram(p.ID)
 }
 
-func (p *BoneProgram) setView(view mgl32.Mat4) {
+func (p *BoneProgram) setView(view mgl32.Mat4, camPosition mgl32.Vec3) {
 	p.view = view
+	p.camPosition = camPosition
 }
 
 func (p *BoneProgram) setProjection(projection mgl32.Mat4) {
 	p.projection = projection
-}
-
-func (p *BoneProgram) AddDrawable(d Drawable) {
-	p.drawablesMut.Lock()
-	p.drawables[d] = struct{}{}
-	p.drawablesMut.Unlock()
-}
-
-func (p *BoneProgram) RemoveDrawable(d Drawable) {
-	p.drawablesMut.Lock()
-	delete(p.drawables, d)
-	p.drawablesMut.Unlock()
 }
 
 func (p *BoneProgram) Draw(state *GLState) {
@@ -128,20 +120,23 @@ func (p *BoneProgram) Draw(state *GLState) {
 	p.use()
 	gl.UniformMatrix4fv(p.CameraID, 1, false, &p.view[0])
 	gl.UniformMatrix4fv(p.ProjectionID, 1, false, &p.projection[0])
+	gl.Uniform3fv(p.CamPositionID, 1, &p.camPosition[0])
 
-	p.drawablesMut.Lock()
-	for drawable := range p.drawables {
-		drawable.Draw(state)
+	p.meshesMut.Lock()
+	for mesh := range p.meshes {
+		gl.UniformMatrix4fv(p.BonesID, int32(len(mesh.bones)), false, &mesh.bones[0][0])
+		mesh.Draw(state)
 	}
-	p.drawablesMut.Unlock()
+	p.meshesMut.Unlock()
 }
 
-func (p *BoneProgram) NewMesh(vertexes []mgl32.Vec3, faces []MeshFace, uvCoords []mgl32.Vec2, normals []mgl32.Vec3, vertBones []VertBone, boneWeights []mgl32.Vec4) *Mesh {
+func (p *BoneProgram) NewMesh(vertexes []mgl32.Vec3, faces []MeshFace, uvCoords []mgl32.Vec2, normals []mgl32.Vec3, vertBones []VertBone, boneWeights []mgl32.Vec4, bones []mgl32.Mat4) *Mesh {
 
 	mesh := &Mesh{
 		count:    int32(len(faces) * 3),
 		program:  p,
 		rotation: mgl32.QuatIdent(),
+		bones:    bones,
 
 		// Save references to data so it won't get garbage-collected prematurely
 		vertexes: vertexes,
@@ -185,8 +180,8 @@ func (p *BoneProgram) NewMesh(vertexes []mgl32.Vec3, faces []MeshFace, uvCoords 
 	gl.EnableVertexAttribArray(p.NormalID)
 	gl.VertexAttribPointer(p.NormalID, 3, gl.FLOAT, false, 3*4, gl.PtrOffset(0))
 
-	gl.GenBuffers(1, &mesh.bonesVBO)
-	gl.BindBuffer(gl.ARRAY_BUFFER, mesh.bonesVBO)
+	gl.GenBuffers(1, &mesh.boneIDsVBO)
+	gl.BindBuffer(gl.ARRAY_BUFFER, mesh.boneIDsVBO)
 	// buffer type - length in bytes - data pointer - draw type
 	gl.BufferData(gl.ARRAY_BUFFER, len(vertBones)*4*4, gl.Ptr(vertBones), gl.STATIC_DRAW)
 
@@ -201,7 +196,17 @@ func (p *BoneProgram) NewMesh(vertexes []mgl32.Vec3, faces []MeshFace, uvCoords 
 	gl.EnableVertexAttribArray(p.VertWeightsID)
 	gl.VertexAttribPointer(p.VertWeightsID, 4, gl.FLOAT, false, 4*4, gl.PtrOffset(0))
 
+	p.meshesMut.Lock()
+	p.meshes[mesh] = struct{}{}
+	p.meshesMut.Unlock()
+
 	return mesh
+}
+
+func (p *BoneProgram) RemoveMesh(d *Mesh) {
+	p.meshesMut.Lock()
+	delete(p.meshes, d)
+	p.meshesMut.Unlock()
 }
 
 func (p *BoneProgram) GetModelID() int32 {

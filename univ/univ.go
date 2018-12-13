@@ -2,6 +2,7 @@ package univ
 
 import (
 	"fmt"
+	"log"
 	"time"
 	"unsafe"
 
@@ -44,15 +45,16 @@ func (u *Universe) NewBody(modelPath string, program draw.Program, textures []*d
 	}
 
 	body := &Body{
-		meshes:   make([]*draw.Mesh, len(meshes)),
-		rotation: mgl32.QuatIdent(),
-		program:  program,
+		meshes:    make([]*draw.Mesh, len(meshes)),
+		rotation:  mgl32.QuatIdent(),
+		program:   program,
+		observers: make(map[Observer]struct{}),
 	}
 
 	switch program := program.(type) {
 	case *draw.BoneProgram:
 		for i, mesh := range meshes {
-
+			log.Println(mesh.UVChannels)
 			bones := make([]mgl32.Mat4, mesh.BoneCount)
 			for _, bone := range mesh.Bones {
 				bones[bone.Id] = bone.Transform
@@ -64,7 +66,7 @@ func (u *Universe) NewBody(modelPath string, program draw.Program, textures []*d
 			}
 
 			faces := *(*[]draw.MeshFace)(unsafe.Pointer(&mesh.Faces))
-			body.meshes[i] = program.NewMesh(mesh.Vertices, faces, mesh.UVChannels[0], mesh.Normals, vertBones, mesh.VertexWeights)
+			body.meshes[i] = program.NewMesh(mesh.Vertices, faces, mesh.UVChannels[0], mesh.Normals, vertBones, mesh.VertexWeights, bones)
 			body.meshes[i].SetTexture(textures[i])
 		}
 	case *draw.StandardProgram:
@@ -75,7 +77,6 @@ func (u *Universe) NewBody(modelPath string, program draw.Program, textures []*d
 		}
 	}
 
-	program.AddDrawable(body)
 	u.bodies[body] = struct{}{}
 
 	return body, nil
@@ -83,6 +84,8 @@ func (u *Universe) NewBody(modelPath string, program draw.Program, textures []*d
 
 // RemoveBody removes a body from u, such that it will no longer be drawn or recieve updates
 func (u *Universe) RemoveBody(body *Body) {
-	body.program.RemoveDrawable(body)
+	for _, mesh := range body.meshes {
+		body.program.RemoveMesh(mesh)
+	}
 	delete(u.bodies, body)
 }

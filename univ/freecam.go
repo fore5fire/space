@@ -35,7 +35,7 @@ func (cam *FreeCam) Destroy() {
 func (cam *FreeCam) tick(elapsed float32) {
 	cam.mut.Lock()
 	transform := cam.rotation.Normalize().Mat4().Mul4(mgl32.Translate3D(cam.location.Elem()))
-	cam.window.SetView(transform)
+	cam.window.SetView(transform, cam.location)
 	cam.mut.Unlock()
 }
 

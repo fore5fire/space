@@ -10,9 +10,13 @@ in vec3 vertNormal;
 
 out vec2 fragTexCoord;
 out vec3 fragNormal;
+out vec3 fragPosition;
 
 void main() {
-  fragNormal = vertNormal;
+  mat4 modelview = camera * model;
+
+  gl_Position = projection * modelview * vec4(vert, 1);
   fragTexCoord = vertTexCoord;
-  gl_Position = projection * camera * model * vec4(vert, 1);
+  fragPosition = vert;
+  fragNormal = vertNormal;
 }

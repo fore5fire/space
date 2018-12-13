@@ -18,6 +18,7 @@ type Window struct {
 	programs      map[ProgramType]Program
 	mut           sync.Mutex
 	view          mgl32.Mat4
+	camPosition   mgl32.Vec3
 }
 
 func NewWindow(width, height int) *Window {
@@ -89,9 +90,10 @@ func (w *Window) GetWidth() int {
 	return w.width
 }
 
-func (w *Window) SetView(view mgl32.Mat4) {
+func (w *Window) SetView(view mgl32.Mat4, camPosition mgl32.Vec3) {
 	w.mut.Lock()
 	w.view = view
+	w.camPosition = camPosition
 	w.mut.Unlock()
 }
 
@@ -124,6 +126,7 @@ func (w *Window) Loop(keyCallback glfw.KeyCallback, mouseButtonCallback glfw.Mou
 
 		w.mut.Lock()
 		view := w.view
+		camPosition := w.camPosition
 		w.mut.Unlock()
 
 		// Clear buffer
@@ -131,7 +134,7 @@ func (w *Window) Loop(keyCallback glfw.KeyCallback, mouseButtonCallback glfw.Mou
 
 		for _, p := range w.programs {
 			p.setProjection(projection)
-			p.setView(view)
+			p.setView(view, camPosition)
 
 			p.Draw(&glState)
 		}

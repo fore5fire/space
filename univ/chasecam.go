@@ -15,7 +15,6 @@ type ChaseCam struct {
 	rotation mgl32.Quat
 	target   *Body
 	window   *draw.Window
-	ticker   *Ticker
 }
 
 // NewChaseCam creates a new ChaseCam with the specified target and update interval.
@@ -24,26 +23,13 @@ func NewChaseCam(target *Body, window *draw.Window) *ChaseCam {
 		target: target,
 		window: window,
 	}
-	cam.ticker = NewTicker(DefaultRefreshRate, cam.tick)
-	cam.ticker.Start()
+	target.AddObserver(cam)
 	return cam
 }
 
 // Remove stops the camera from updating. Always call Remove on ChaseCams that are no longer needed.
 func (cam *ChaseCam) Remove() {
-	cam.ticker.Close()
-}
-
-func (cam *ChaseCam) tick(elapsed float32) {
-	// set the position of the camera and the look at point as relative positions to the direction and position of the target
-	rot := cam.target.GetRotation()
-	lookAtMat := mgl32.Translate3D(cam.target.GetLocation().Elem())
-	lookAtMatRot := lookAtMat.Mul4(rot.Normalize().Mat4())
-	lookAt := lookAtMatRot.Mul4(mgl32.Translate3D(0.0, 0.0, 5.0)).Col(3).Vec3()
-	lookFrom := lookAtMatRot.Mul4(mgl32.Translate3D(cam.location.Elem())).Col(3).Vec3()
-
-	transform := mgl32.LookAtV(lookFrom, lookAt, mgl32.Vec3{0, 1, 0})
-	cam.window.SetView(transform)
+	cam.target.RemoveObserver(cam)
 }
 
 // GetLocation returns the current location of b
@@ -58,6 +44,7 @@ func (cam *ChaseCam) Translate(offset mgl32.Vec3) {
 	cam.locMut.Lock()
 	cam.location = cam.location.Add(offset)
 	cam.locMut.Unlock()
+	cam.update()
 }
 
 // SetLocation sets the location of b
@@ -65,6 +52,7 @@ func (cam *ChaseCam) SetLocation(loc mgl32.Vec3) {
 	cam.locMut.Lock()
 	cam.location = loc
 	cam.locMut.Unlock()
+	cam.update()
 }
 
 // GetRotation gets the rotation of b
@@ -79,6 +67,7 @@ func (cam *ChaseCam) Rotate(offset mgl32.Quat) {
 	cam.rotMut.Lock()
 	cam.rotation = cam.rotation.Mul(offset)
 	cam.rotMut.Unlock()
+	cam.update()
 }
 
 // SetRotation sets the rotation of b to rot
@@ -86,4 +75,29 @@ func (cam *ChaseCam) SetRotation(rot mgl32.Quat) {
 	cam.rotMut.Lock()
 	cam.rotation = rot
 	cam.rotMut.Unlock()
+	cam.update()
 }
+
+// BodyTranslated conforms to Observer.BodyTranslated and should not be called directly
+func (cam *ChaseCam) BodyTranslated(b *Body) {
+	cam.update()
+}
+
+// BodyRotated conforms to Observer.BodyRotated and should not be called directly
+func (cam *ChaseCam) BodyRotated(b *Body) {
+	cam.update()
+}
+
+func (cam *ChaseCam) update() {
+	// set the position of the camera and the look at point as relative positions to the direction and position of the target
+	rot := cam.target.GetRotation()
+	lookAtMat := mgl32.Translate3D(cam.target.GetLocation().Elem())
+	lookAtMatRot := lookAtMat.Mul4(rot.Normalize().Mat4())
+	lookAt := lookAtMatRot.Mul4(mgl32.Translate3D(0.0, 0.0, 5.0)).Col(3).Vec3()
+	lookFrom := lookAtMatRot.Mul4(mgl32.Translate3D(cam.location.Elem())).Col(3).Vec3()
+
+	transform := mgl32.LookAtV(lookFrom, lookAt, mgl32.Vec3{0, 1, 0})
+	cam.window.SetView(transform, lookFrom)
+}
+
+// func (cam *ChaseCam) GetLocation

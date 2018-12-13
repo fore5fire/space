@@ -11,25 +11,24 @@ import (
 )
 
 type StandardProgram struct {
-	ID           uint32
-	ProjectionID int32
-	ModelID      int32
-	CameraID     int32
-	TextureID    int32
-	BonesID      int32
+	ID            uint32
+	ProjectionID  int32
+	ModelID       int32
+	CameraID      int32
+	CamPositionID int32
+	TextureID     int32
 
-	TextureLocID  uint32
-	VertexID      uint32
-	NormalID      uint32
-	VertBonesID   uint32
-	VertWeightsID uint32
+	TextureLocID uint32
+	VertexID     uint32
+	NormalID     uint32
 
 	viewMut       sync.Mutex
 	view          mgl32.Mat4
+	camPosition   mgl32.Vec3
 	projectionMut sync.Mutex
 	projection    mgl32.Mat4
-	drawablesMut  sync.Mutex
-	drawables     map[Drawable]struct{}
+	meshesMut     sync.Mutex
+	meshes        map[*Mesh]struct{}
 }
 
 func newStandardProgram(vertShaderPath, fragShaderPath string) *StandardProgram {
@@ -77,22 +76,19 @@ func newStandardProgram(vertShaderPath, fragShaderPath string) *StandardProgram 
 	gl.DeleteShader(fragmentShader)
 
 	p := &StandardProgram{
-		ID:           id,
-		ProjectionID: gl.GetUniformLocation(id, gl.Str("projection\x00")),
-		CameraID:     gl.GetUniformLocation(id, gl.Str("camera\x00")),
-		ModelID:      gl.GetUniformLocation(id, gl.Str("model\x00")),
-		TextureID:    gl.GetUniformLocation(id, gl.Str("tex\x00")),
-		BonesID:      gl.GetUniformLocation(id, gl.Str("bones\x00")),
-
+		ID:            id,
+		ProjectionID:  gl.GetUniformLocation(id, gl.Str("projection\x00")),
+		CameraID:      gl.GetUniformLocation(id, gl.Str("camera\x00")),
+		ModelID:       gl.GetUniformLocation(id, gl.Str("model\x00")),
+		TextureID:     gl.GetUniformLocation(id, gl.Str("tex\x00")),
+		CamPositionID: gl.GetUniformLocation(id, gl.Str("camPosition\x00")),
 		VertexID:      uint32(gl.GetAttribLocation(id, gl.Str("vert\x00"))),
 		TextureLocID:  uint32(gl.GetAttribLocation(id, gl.Str("vertTexCoord\x00"))),
 		NormalID:      uint32(gl.GetAttribLocation(id, gl.Str("vertNormal\x00"))),
-		VertBonesID:   uint32(gl.GetAttribLocation(id, gl.Str("vertBones\x00"))),
-		VertWeightsID: uint32(gl.GetAttribLocation(id, gl.Str("vertWeights\x00"))),
 
 		projection: mgl32.Ident4(),
 		view:       mgl32.Ident4(),
-		drawables:  make(map[Drawable]struct{}),
+		meshes:     make(map[*Mesh]struct{}),
 	}
 
 	gl.Uniform1i(p.TextureID, 0)
@@ -105,47 +101,28 @@ func (p *StandardProgram) use() {
 	gl.UseProgram(p.ID)
 }
 
-func (p *StandardProgram) setView(view mgl32.Mat4) {
-	p.viewMut.Lock()
+func (p *StandardProgram) setView(view mgl32.Mat4, camPosition mgl32.Vec3) {
 	p.view = view
-	p.viewMut.Unlock()
+	p.camPosition = camPosition
 }
 
 func (p *StandardProgram) setProjection(projection mgl32.Mat4) {
-	p.projectionMut.Lock()
 	p.projection = projection
-	p.projectionMut.Unlock()
-}
-
-func (p *StandardProgram) AddDrawable(d Drawable) {
-	p.drawablesMut.Lock()
-	p.drawables[d] = struct{}{}
-	p.drawablesMut.Unlock()
-}
-
-func (p *StandardProgram) RemoveDrawable(d Drawable) {
-	p.drawablesMut.Lock()
-	delete(p.drawables, d)
-	p.drawablesMut.Unlock()
 }
 
 func (p *StandardProgram) Draw(state *GLState) {
 
 	p.use()
 
-	p.viewMut.Lock()
 	gl.UniformMatrix4fv(p.CameraID, 1, false, &p.view[0])
-	p.viewMut.Unlock()
-
-	p.projectionMut.Lock()
 	gl.UniformMatrix4fv(p.ProjectionID, 1, false, &p.projection[0])
-	p.projectionMut.Unlock()
+	gl.Uniform3fv(p.CamPositionID, 1, &p.camPosition[0])
 
-	p.drawablesMut.Lock()
-	for drawable := range p.drawables {
-		drawable.Draw(state)
+	p.meshesMut.Lock()
+	for mesh := range p.meshes {
+		mesh.Draw(state)
 	}
-	p.drawablesMut.Unlock()
+	p.meshesMut.Unlock()
 }
 
 func (p *StandardProgram) GetModelID() int32 {
@@ -201,5 +178,15 @@ func (p *StandardProgram) NewMesh(vertexes []mgl32.Vec3, faces []MeshFace, uvCoo
 	gl.EnableVertexAttribArray(p.NormalID)
 	gl.VertexAttribPointer(p.NormalID, 3, gl.FLOAT, false, 3*4, gl.PtrOffset(0))
 
+	p.meshesMut.Lock()
+	p.meshes[mesh] = struct{}{}
+	p.meshesMut.Unlock()
+
 	return mesh
+}
+
+func (p *StandardProgram) RemoveMesh(m *Mesh) {
+	p.meshesMut.Lock()
+	delete(p.meshes, m)
+	p.meshesMut.Unlock()
 }

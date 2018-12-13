@@ -13,7 +13,7 @@ in vec4 vertWeight;
 
 out vec2 fragTexCoord;
 out vec3 fragNormal;
-
+out vec3 fragPosition;
 void main() {
 
   mat4 BoneTransform = bones[vertBones[0]] * vertWeight[0];
@@ -25,6 +25,12 @@ void main() {
   // fragNormal = vertNormal;
 
   fragTexCoord = vertTexCoord;
-  
-  gl_Position = projection * camera * model * BoneTransform * vec4(vert, 1);
+
+  mat4 modelview = camera * model;
+
+  vec4 pos = BoneTransform * vec4(vert, 1);
+  gl_Position = projection * modelview * pos;
+  fragPosition = vec3(pos);
+  fragTexCoord = vertTexCoord;
+  fragNormal = vec3(BoneTransform * vec4(vertNormal, 1));  
 }

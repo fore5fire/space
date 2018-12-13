@@ -18,12 +18,14 @@ const (
 	ProgramTypeBoned = iota
 )
 
+type GLState struct {
+}
+
 // Program is a shader program.
 type Program interface {
-	setView(view mgl32.Mat4)
+	setView(view mgl32.Mat4, camPosition mgl32.Vec3)
 	setProjection(projection mgl32.Mat4)
-	AddDrawable(d Drawable)
-	RemoveDrawable(d Drawable)
+	RemoveMesh(m *Mesh)
 	Draw(state *GLState)
 	GetModelID() int32
 }

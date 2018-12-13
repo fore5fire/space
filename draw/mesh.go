@@ -14,8 +14,9 @@ type Mesh struct {
 	uvVBO         uint32
 	normals       []mgl32.Vec3
 	normalVBO     uint32
-	bones         []mgl32.Vec3
-	bonesVBO      uint32
+	boneIDs       []mgl32.Vec3
+	boneIDsVBO    uint32
+	bones         []mgl32.Mat4
 	weights       []mgl32.Vec3
 	weightsVBO    uint32
 	rotation      mgl32.Quat

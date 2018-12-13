@@ -2,29 +2,42 @@
 
 uniform sampler2D tex;
 uniform mat4 camera;
+uniform mat4 model;
+uniform vec3 camPosition;
 
 in vec2 fragTexCoord;
 in vec3 fragNormal;
+in vec3 fragPosition;
 
 out vec4 outputColor;
 
+const float shininess = 3.0;
+const vec3 lightColor = vec3(1, 1, 1);
+const vec3 lightPosition = vec3(0,100,0);
+const float lightPower = 40.0;
+const vec3 ambientColor = vec3(0.4,0.4,0.4);
+const vec3 diffuseColor = vec3(0.6, 0.6, 0.6);
+const vec3 specColor = vec3(0.4,0.4,0.4);
+const float phongExponent = 1;
+
 void main() {
-
-  vec3 fragCamera = vec3(camera[3][0], camera[3][1], camera[3][2]);
-
-  vec3 lightPosition = vec3(0,-10,0);
-  vec3 diffuseLightColor = vec3(0.8,0.8,0.8);
-  vec3 specularObjectColor = vec3(0.8,0.8,0.8);
-  vec3 ambientLight = vec3(0.2,0.2,0.2);
-  float phongExponent = 1;
-
   vec3 color = texture(tex, vec2(fragTexCoord.x, 1.0-fragTexCoord.y)).rgb;
-  vec3 fragPosition = vec3(gl_FragCoord.x, gl_FragCoord.y, gl_FragCoord.z);
-  vec3 cameraDirection = normalize(fragCamera - fragPosition);
-  vec3 lightDirection = normalize(lightPosition - fragPosition);
+  vec3 normal = normalize(fragNormal);
+  vec3 lightDir = normalize(lightPosition - fragPosition);
+  
+  float lambertian = max(dot(lightDir, normal), 0.0);
+  float spec = 0.0;
 
-  vec3 ca = color * ambientLight;
-  vec3 cd = color * diffuseLightColor * dot(normalize(fragNormal), lightDirection);
-  vec3 cs = specularObjectColor * pow(dot(cameraDirection, reflect(lightDirection, fragNormal)), phongExponent);
-  outputColor = vec4(ca + cd + cs, 1);
+  if (lambertian > 0) {
+    vec3 viewDir = normalize(camPosition-fragPosition);
+    vec3 halfDir = normalize(lightDir + viewDir);
+    float specAngle = max(dot(halfDir, normal), 0);
+    spec = pow(specAngle, shininess);
+  }
+
+  vec3 ambient = ambientColor * color;
+  vec3 diffuse = lambertian * color;
+  vec3 specular = specColor * spec;
+  
+  outputColor = vec4(ambient + diffuse + specular, 1);
 }
