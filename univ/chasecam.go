@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/go-gl/mathgl/mgl32"
+	"github.com/lsmith130/space/draw"
 )
 
 // ChaseCam is a camera that keeps a relative location to a body.
@@ -11,13 +12,15 @@ type ChaseCam struct {
 	locMut   sync.RWMutex
 	location mgl32.Vec3
 	target   *Body
+	window   *draw.Window
 	ticker   *Ticker
 }
 
 // NewChaseCam creates a new ChaseCam with the specified target and update interval.
-func NewChaseCam(target *Body) *ChaseCam {
+func NewChaseCam(target *Body, window *draw.Window) *ChaseCam {
 	cam := &ChaseCam{
 		target: target,
+		window: window,
 	}
 	cam.ticker = NewTicker(DefaultRefreshRate, cam.tick)
 	cam.ticker.Start()
@@ -34,7 +37,7 @@ func (cam *ChaseCam) tick(elapsed float32) {
 	// rot := b.GetRotation().Mul(cam.rotation)
 	transform := mgl32.LookAtV(loc, cam.target.GetLocation(), mgl32.Vec3{0, 1, 0})
 	// transform := mgl32.Translate3D(loc.Elem()).Mul4(rot.Normalize().Mat4())
-	cam.target.program.SetView(transform)
+	cam.window.SetView(transform)
 }
 
 // GetLocation returns the current location of b

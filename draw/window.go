@@ -3,6 +3,7 @@ package draw
 import (
 	"fmt"
 	"log"
+	"sync"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
@@ -14,7 +15,9 @@ type Window struct {
 	close         chan struct{}
 	width, height int
 	window        *glfw.Window
-	programs      map[ProgramType]*Program
+	programs      map[ProgramType]Program
+	mut           sync.Mutex
+	view          mgl32.Mat4
 }
 
 func NewWindow(width, height int) *Window {
@@ -47,8 +50,9 @@ func NewWindow(width, height int) *Window {
 		window: window,
 	}
 
-	w.programs = map[ProgramType]*Program{
-		ProgramTypeStandard: newProgram("shaders/shader.vert", "shaders/shader.frag"),
+	w.programs = map[ProgramType]Program{
+		ProgramTypeStandard: newStandardProgram("shaders/shader.vert", "shaders/shader.frag"),
+		ProgramTypeBoned:    newBoneProgram("shaders/bones.vert", "shaders/bones.frag"),
 	}
 
 	return w
@@ -67,12 +71,28 @@ func (w *Window) Close() {
 	close(w.close)
 }
 
+// GetBoneProgram returns the bone program of w
+func (w *Window) GetBoneProgram() *BoneProgram {
+	return w.programs[ProgramTypeBoned].(*BoneProgram)
+}
+
+// GetStandardProgram returns the standard program of w
+func (w *Window) GetStandardProgram() *StandardProgram {
+	return w.programs[ProgramTypeStandard].(*StandardProgram)
+}
+
 func (w *Window) GetHeight() int {
 	return w.height
 }
 
 func (w *Window) GetWidth() int {
 	return w.width
+}
+
+func (w *Window) SetView(view mgl32.Mat4) {
+	w.mut.Lock()
+	w.view = view
+	w.mut.Unlock()
 }
 
 func (w *Window) Loop(keyCallback glfw.KeyCallback, mouseButtonCallback glfw.MouseButtonCallback, cursorPosCallback glfw.CursorPosCallback) {
@@ -102,11 +122,16 @@ func (w *Window) Loop(keyCallback glfw.KeyCallback, mouseButtonCallback glfw.Mou
 			break
 		}
 
+		w.mut.Lock()
+		view := w.view
+		w.mut.Unlock()
+
 		// Clear buffer
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 		for _, p := range w.programs {
-			p.SetProjection(projection)
+			p.setProjection(projection)
+			p.setView(view)
 
 			p.Draw(&glState)
 		}

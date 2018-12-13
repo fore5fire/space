@@ -31,7 +31,7 @@ func NewRobot(u *univ.Universe) *Robot {
 		log.Fatal(err)
 	}
 
-	b, err := u.NewBody("models/robot.dae", draw.ProgramTypeStandard, []*draw.Texture{head, head, leftfoot, rightfoot, body})
+	b, err := u.NewBody("models/robot.dae", u.Window.GetStandardProgram(), []*draw.Texture{head, head, leftfoot, rightfoot, body})
 	if err != nil {
 		log.Fatal(err)
 	}

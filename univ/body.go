@@ -13,7 +13,7 @@ import (
 // All body functions are safe to use concurrently.
 type Body struct {
 	meshes  []*draw.Mesh
-	program *draw.Program
+	program draw.Program
 	// observerMut sync.RWMutex
 	// observers   map[Observer]struct{}
 	locMut   sync.RWMutex

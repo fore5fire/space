@@ -12,7 +12,7 @@ out vec2 fragTexCoord;
 out vec3 fragNormal;
 
 void main() {
-    fragNormal = vertNormal;
-    fragTexCoord = vertTexCoord;
-    gl_Position = projection * camera * model * vec4(vert, 1);
+  fragNormal = vertNormal;
+  fragTexCoord = vertTexCoord;
+  gl_Position = projection * camera * model * vec4(vert, 1);
 }

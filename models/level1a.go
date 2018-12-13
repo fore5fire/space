@@ -18,7 +18,7 @@ func NewLevel1A(u *univ.Universe) *Level1A {
 		log.Fatal(err)
 	}
 
-	b, err := u.NewBody("models/introlevel1.fbx", draw.ProgramTypeStandard, []*draw.Texture{tex, tex})
+	b, err := u.NewBody("models/introlevel1.fbx", u.Window.GetStandardProgram(), []*draw.Texture{tex, tex})
 	if err != nil {
 		log.Fatal(err)
 	}
