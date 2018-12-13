@@ -1,29 +1,36 @@
 package draw
 
 import (
+	"sync"
+
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
+	"github.com/tbogdala/gombz"
 )
 
 type Mesh struct {
-	vao           uint32
-	vertexes      []mgl32.Vec3
-	vertexVBO     uint32
-	indexBufferID uint32
-	uvCoords      []mgl32.Vec2
-	uvVBO         uint32
-	normals       []mgl32.Vec3
-	normalVBO     uint32
-	boneIDs       []mgl32.Vec3
-	boneIDsVBO    uint32
-	bones         []mgl32.Mat4
-	weights       []mgl32.Vec3
-	weightsVBO    uint32
-	rotation      mgl32.Quat
-	position      mgl32.Vec3
-	count         int32
-	program       Program
-	texture       *Texture
+	vao              uint32
+	vertexes         []mgl32.Vec3
+	vertexVBO        uint32
+	indexBufferID    uint32
+	uvCoords         []mgl32.Vec2
+	uvVBO            uint32
+	normals          []mgl32.Vec3
+	normalVBO        uint32
+	boneIDs          []mgl32.Vec3
+	boneIDsVBO       uint32
+	bonesMut         sync.Mutex
+	bones            []mgl32.Mat4
+	weights          []mgl32.Vec3
+	weightsVBO       uint32
+	rotation         mgl32.Quat
+	position         mgl32.Vec3
+	count            int32
+	program          Program
+	texture          *Texture
+	animations       []gombz.Animation
+	currentAnimation int
+	ticker           *Ticker
 }
 
 type MeshFace [3]uint32

@@ -124,7 +124,10 @@ func (p *BoneProgram) Draw(state *GLState) {
 
 	p.meshesMut.Lock()
 	for mesh := range p.meshes {
+		mesh.bonesMut.Lock()
 		gl.UniformMatrix4fv(p.BonesID, int32(len(mesh.bones)), false, &mesh.bones[0][0])
+		mesh.bonesMut.Unlock()
+
 		mesh.Draw(state)
 	}
 	p.meshesMut.Unlock()
@@ -186,7 +189,7 @@ func (p *BoneProgram) NewMesh(vertexes []mgl32.Vec3, faces []MeshFace, uvCoords 
 	gl.BufferData(gl.ARRAY_BUFFER, len(vertBones)*4*4, gl.Ptr(vertBones), gl.STATIC_DRAW)
 
 	gl.EnableVertexAttribArray(p.VertBonesID)
-	gl.VertexAttribPointer(p.VertBonesID, 4, gl.INT, false, 4*4, gl.PtrOffset(0))
+	gl.VertexAttribIPointer(p.VertBonesID, 4, gl.INT, 4*4, gl.PtrOffset(0))
 
 	gl.GenBuffers(1, &mesh.weightsVBO)
 	gl.BindBuffer(gl.ARRAY_BUFFER, mesh.weightsVBO)

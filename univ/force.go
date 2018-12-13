@@ -1,10 +1,10 @@
 package univ
 
 import (
-	"log"
 	"sync"
 
 	"github.com/go-gl/mathgl/mgl32"
+	"github.com/lsmith130/space/draw"
 )
 
 // LinearForce is an observer that only applies the translation
@@ -16,8 +16,8 @@ type LinearForce struct {
 	velocity     mgl32.Vec3
 	body         *Body
 
-	velocityTicker *Ticker
-	accelTicker    *Ticker
+	velocityTicker *draw.Ticker
+	accelTicker    *draw.Ticker
 }
 
 // NewLinearForce creates a new LinearForce.
@@ -26,8 +26,8 @@ func NewLinearForce(b *Body, vector mgl32.Vec3) *LinearForce {
 		vector: vector,
 		body:   b,
 	}
-	f.accelTicker = NewTicker(DefaultRefreshRate, f.accelTick)
-	f.velocityTicker = NewTicker(DefaultRefreshRate, f.velocityTick)
+	f.accelTicker = draw.NewTicker(DefaultRefreshRate, f.accelTick)
+	f.velocityTicker = draw.NewTicker(DefaultRefreshRate, f.velocityTick)
 	return f
 }
 
@@ -68,8 +68,8 @@ type Torque struct {
 	lastAngularV mgl32.Quat
 	body         *Body
 
-	velocityTicker *Ticker
-	accelTicker    *Ticker
+	velocityTicker *draw.Ticker
+	accelTicker    *draw.Ticker
 }
 
 // NewTorque creates a new torque object, initially paused.
@@ -79,8 +79,8 @@ func NewTorque(b *Body, torque mgl32.Quat) *Torque {
 		angularV: mgl32.QuatIdent(),
 		body:     b,
 	}
-	t.velocityTicker = NewTicker(DefaultRefreshRate, t.velocityTick)
-	t.accelTicker = NewTicker(DefaultRefreshRate, t.accelTick)
+	t.velocityTicker = draw.NewTicker(DefaultRefreshRate, t.velocityTick)
+	t.accelTicker = draw.NewTicker(DefaultRefreshRate, t.accelTick)
 	return t
 }
 
@@ -103,7 +103,7 @@ func (t *Torque) velocityTick(elapsed float32) {
 }
 
 func (t *Torque) accelTick(elapsed float32) {
-	log.Println(elapsed)
+
 	t.velocityMut.Lock()
 	t.angularV = mgl32.QuatNlerp(t.angularV, t.angularV.Mul(t.torque), elapsed)
 	t.velocityMut.Unlock()

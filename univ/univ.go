@@ -2,7 +2,6 @@ package univ
 
 import (
 	"fmt"
-	"log"
 	"time"
 	"unsafe"
 
@@ -46,6 +45,7 @@ func (u *Universe) NewBody(modelPath string, program draw.Program, textures []*d
 
 	body := &Body{
 		meshes:    make([]*draw.Mesh, len(meshes)),
+		animators: make([]*draw.Animator, len(meshes)),
 		rotation:  mgl32.QuatIdent(),
 		program:   program,
 		observers: make(map[Observer]struct{}),
@@ -54,10 +54,10 @@ func (u *Universe) NewBody(modelPath string, program draw.Program, textures []*d
 	switch program := program.(type) {
 	case *draw.BoneProgram:
 		for i, mesh := range meshes {
-			log.Println(mesh.UVChannels)
+
 			bones := make([]mgl32.Mat4, mesh.BoneCount)
 			for _, bone := range mesh.Bones {
-				bones[bone.Id] = bone.Transform
+				bones[bone.Id] = mgl32.Ident4()
 			}
 
 			vertBones := make([]draw.VertBone, len(mesh.VertexWeightIds))
@@ -68,6 +68,8 @@ func (u *Universe) NewBody(modelPath string, program draw.Program, textures []*d
 			faces := *(*[]draw.MeshFace)(unsafe.Pointer(&mesh.Faces))
 			body.meshes[i] = program.NewMesh(mesh.Vertices, faces, mesh.UVChannels[0], mesh.Normals, vertBones, mesh.VertexWeights, bones)
 			body.meshes[i].SetTexture(textures[i])
+
+			body.animators[i] = draw.NewAnimator(mesh.Bones, mesh.Animations, body.meshes[i])
 		}
 	case *draw.StandardProgram:
 		for i, mesh := range meshes {

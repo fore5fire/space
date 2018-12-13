@@ -12,7 +12,7 @@ type FreeCam struct {
 	mut      sync.RWMutex
 	location mgl32.Vec3
 	rotation mgl32.Quat
-	ticker   *Ticker
+	ticker   *draw.Ticker
 
 	window *draw.Window
 }
@@ -22,7 +22,7 @@ func NewFreeCam(w *draw.Window, window *draw.Window) *FreeCam {
 	cam := &FreeCam{
 		window: window,
 	}
-	cam.ticker = NewTicker(DefaultRefreshRate, cam.tick)
+	cam.ticker = draw.NewTicker(DefaultRefreshRate, cam.tick)
 	cam.ticker.Start()
 	return cam
 }

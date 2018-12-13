@@ -20,7 +20,7 @@ func NewAstronaut(u *univ.Universe) *Astronaut {
 		log.Fatal(err)
 	}
 
-	b, err := u.NewBody("models/astronaut-animated.dae", u.Window.GetBoneProgram(), []*draw.Texture{tex})
+	b, err := u.NewBody("models/astronaut3.dae", u.Window.GetBoneProgram(), []*draw.Texture{tex})
 	if err != nil {
 		log.Fatal(err)
 	}

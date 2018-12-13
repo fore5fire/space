@@ -24,7 +24,8 @@ type Body struct {
 	observerMut sync.RWMutex
 	observers   map[Observer]struct{}
 
-	ticker *Ticker
+	ticker    *draw.Ticker
+	animators []*draw.Animator
 }
 
 // AddObserver adds an observer to b. o.BodyUpdated will be called whenever b is updated.
