@@ -107,6 +107,9 @@ func HandleKey(w *glfw.Window, key glfw.Key, scanCode int, action glfw.Action, m
 		man.SetDown(action != glfw.Release)
 
 	case glfw.KeySpace:
+		if action == glfw.Release {
+			return
+		}
 		goal1.Pickup(man.Body)
 		goal2.Pickup(man.Body)
 	}
