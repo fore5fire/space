@@ -49,7 +49,6 @@ func (u *Universe) NewBody(modelPath string, program draw.Program, textures []*d
 		rotation:  mgl32.QuatIdent(),
 		program:   program,
 		observers: make(map[Observer]struct{}),
-		angularV:  mgl32.QuatIdent(),
 	}
 
 	switch program := program.(type) {

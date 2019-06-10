@@ -17,8 +17,8 @@ type Astronaut struct {
 	u            *univ.Universe
 	walkingSound beep.StreamSeekCloser
 
-	forward, back, left, right, up, down *univ.LinearForce
-	rightroll, leftroll                  *univ.Torque
+	forward, back, left, right, up, down *univ.Acceleration
+	rightroll, leftroll                  *univ.Acceleration
 }
 
 func NewAstronaut(u *univ.Universe) *Astronaut {
@@ -36,14 +36,14 @@ func NewAstronaut(u *univ.Universe) *Astronaut {
 	a := &Astronaut{
 		Body:      b,
 		u:         u,
-		forward:   univ.NewLinearForce(b, mgl32.Vec3{0, 0, 20}),
-		back:      univ.NewLinearForce(b, mgl32.Vec3{0, 0, -20}),
-		left:      univ.NewLinearForce(b, mgl32.Vec3{20, 0, 0}),
-		right:     univ.NewLinearForce(b, mgl32.Vec3{-20, 0, 0}),
-		up:        univ.NewLinearForce(b, mgl32.Vec3{0, 20, 0}),
-		down:      univ.NewLinearForce(b, mgl32.Vec3{0, -20, 0}),
-		rightroll: univ.NewTorque(b, mgl32.QuatRotate(1.5, mgl32.Vec3{0, 1, 0})),
-		leftroll:  univ.NewTorque(b, mgl32.QuatRotate(-1.5, mgl32.Vec3{0, 1, 0})),
+		forward:   univ.NewLinearAcceleration(b, mgl32.Vec3{0, 0, 20}),
+		back:      univ.NewLinearAcceleration(b, mgl32.Vec3{0, 0, -20}),
+		left:      univ.NewLinearAcceleration(b, mgl32.Vec3{20, 0, 0}),
+		right:     univ.NewLinearAcceleration(b, mgl32.Vec3{-20, 0, 0}),
+		up:        univ.NewLinearAcceleration(b, mgl32.Vec3{0, 20, 0}),
+		down:      univ.NewLinearAcceleration(b, mgl32.Vec3{0, -20, 0}),
+		rightroll: univ.NewAngularAcceleration(b, mgl32.Vec3{0, -1.5, 0}),
+		leftroll:  univ.NewAngularAcceleration(b, mgl32.Vec3{0, 1.5, 0}),
 	}
 
 	a.forward.Pause()

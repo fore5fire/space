@@ -33,7 +33,7 @@ func (cam *ChaseCam) Remove() {
 }
 
 // GetLocation returns the current location of b
-func (cam *ChaseCam) GetLocation() mgl32.Vec3 {
+func (cam *ChaseCam) Location() mgl32.Vec3 {
 	cam.locMut.RLock()
 	defer cam.locMut.RUnlock()
 	return cam.location
@@ -56,7 +56,7 @@ func (cam *ChaseCam) SetLocation(loc mgl32.Vec3) {
 }
 
 // GetRotation gets the rotation of b
-func (cam *ChaseCam) GetRotation() mgl32.Quat {
+func (cam *ChaseCam) Rotation() mgl32.Quat {
 	cam.rotMut.RLock()
 	defer cam.rotMut.RUnlock()
 	return cam.rotation
@@ -90,11 +90,11 @@ func (cam *ChaseCam) BodyRotated(b *Body) {
 
 func (cam *ChaseCam) update() {
 	// set the position of the camera and the look at point as relative positions to the direction and position of the target
-	rot := cam.target.GetRotation()
-	lookAtMat := mgl32.Translate3D(cam.target.GetLocation().Elem())
+	rot := cam.target.Rotation()
+	lookAtMat := mgl32.Translate3D(cam.target.Location().Elem())
 	lookAtMatRot := lookAtMat.Mul4(rot.Normalize().Mat4())
 	lookAt := lookAtMatRot.Mul4(mgl32.Translate3D(0.0, 0.0, 5.0)).Col(3).Vec3()
-	lookFrom := lookAtMatRot.Mul4(mgl32.Translate3D(cam.location.Elem())).Col(3).Vec3()
+	lookFrom := lookAtMatRot.Mul4(mgl32.Translate3D(cam.Location().Elem())).Col(3).Vec3()
 
 	transform := mgl32.LookAtV(lookFrom, lookAt, mgl32.Vec3{0, 1, 0})
 	cam.window.SetView(transform, lookFrom)

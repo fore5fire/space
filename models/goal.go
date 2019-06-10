@@ -42,7 +42,7 @@ func NewGoal(u *univ.Universe) *Goal {
 
 func (goal *Goal) Pickup(t *univ.Body) {
 
-	if t.GetLocation().Sub(goal.Body.GetLocation()).Len() < 10 {
+	if t.Location().Sub(goal.Body.Location()).Len() < 10 {
 		if goal.target == nil {
 			f1, _ := os.Open("audio/pickup.wav")
 			s, _, _ := wav.Decode(f1)
@@ -81,8 +81,8 @@ func (goal *Goal) BodyRotated(b *univ.Body) {
 }
 
 func (goal *Goal) update() {
-	rot := goal.target.GetRotation()
-	posMat := mgl32.Translate3D(goal.target.GetLocation().Elem())
+	rot := goal.target.Rotation()
+	posMat := mgl32.Translate3D(goal.target.Location().Elem())
 	posRot := posMat.Mul4(rot.Normalize().Mat4())
 	pos := posRot.Mul4(mgl32.Translate3D(0.0, 0.0, -1.0)).Col(3).Vec3()
 

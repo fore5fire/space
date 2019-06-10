@@ -50,7 +50,7 @@ func NewShip(u *univ.Universe) *Ship {
 
 func (ship *Ship) tick(elapsed float32) {
 	offset := (float32((time.Now().UnixNano()/1000%3)-1) / 50.0) + 5
-	loc := mgl32.Vec3{ship.Body.GetLocation().X(), float32(offset), ship.Body.GetLocation().Z()}
+	loc := mgl32.Vec3{ship.Body.Location().X(), float32(offset), ship.Body.Location().Z()}
 	ship.Body.SetLocation(loc)
 }
 

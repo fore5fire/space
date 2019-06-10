@@ -27,8 +27,8 @@ type Body struct {
 	velocityMut  sync.Mutex
 	lastVelocity mgl32.Vec3
 	velocity     mgl32.Vec3
-	angularV     mgl32.Quat
-	lastAngularV mgl32.Quat
+	angularV     mgl32.Vec3
+	lastAngularV mgl32.Vec3
 	ticker       *draw.Ticker
 	animators    []*draw.Animator
 }
@@ -50,7 +50,7 @@ func (b *Body) RemoveObserver(o Observer) {
 }
 
 // GetLocation returns the current location of b
-func (b *Body) GetLocation() mgl32.Vec3 {
+func (b *Body) Location() mgl32.Vec3 {
 	b.locMut.RLock()
 	defer b.locMut.RUnlock()
 	return b.location
@@ -80,8 +80,8 @@ func (b *Body) SetLocation(loc mgl32.Vec3) {
 	b.notifyTranslation()
 }
 
-// GetRotation gets the rotation of b
-func (b *Body) GetRotation() mgl32.Quat {
+// Rotation gets the rotation of b
+func (b *Body) Rotation() mgl32.Quat {
 	b.rotMut.RLock()
 	defer b.rotMut.RUnlock()
 	return b.rotation
@@ -154,33 +154,46 @@ func (b *Body) SetVelocity(velocity mgl32.Vec3) {
 	b.velocityMut.Unlock()
 }
 
-func (b *Body) GetVelocity() mgl32.Vec3 {
+func (b *Body) Velocity() mgl32.Vec3 {
 	b.velocityMut.Lock()
 	defer b.velocityMut.Unlock()
 	return b.velocity
 }
 
-func (b *Body) SetAngularV(angularV mgl32.Quat) {
+func (b *Body) AddVelocity(deltaV mgl32.Vec3) {
+	b.velocityMut.Lock()
+	defer b.velocityMut.Unlock()
+	b.velocity = b.velocity.Add(deltaV)
+}
+
+func (b *Body) SetAngularV(angularV mgl32.Vec3) {
 	b.velocityMut.Lock()
 	b.angularV = angularV
 	b.velocityMut.Unlock()
 }
 
-func (b *Body) GetAngularV() mgl32.Quat {
+func (b *Body) AngularV() mgl32.Vec3 {
 	b.velocityMut.Lock()
 	defer b.velocityMut.Unlock()
 	return b.angularV
 }
 
+func (b *Body) AddAngularV(deltaAngularV mgl32.Vec3) {
+	b.velocityMut.Lock()
+	defer b.velocityMut.Unlock()
+	b.angularV = b.angularV.Add(deltaAngularV)
+}
+
 func (b *Body) velocityTick(elapsed float32) {
 	b.velocityMut.Lock()
+	defer b.velocityMut.Unlock()
 
 	b.Translate(b.velocity.Add(b.lastVelocity).Mul(elapsed / 2))
 	b.lastVelocity = b.velocity
 
-	angularV := mgl32.QuatNlerp(b.angularV, b.lastAngularV, 0.5)
-	b.Rotate(mgl32.QuatNlerp(mgl32.QuatIdent(), angularV, elapsed))
+	angularV := b.angularV.Add(b.lastAngularV).Mul(0.5)
+	// TODO: verify the use of elapsed as the angle (assuming angularV includes the magnitude of rotation per second) correct.
+	deltaRotation := mgl32.QuatRotate(elapsed, angularV)
+	b.Rotate(deltaRotation)
 	b.lastAngularV = b.angularV
-
-	b.velocityMut.Unlock()
 }

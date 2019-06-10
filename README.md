@@ -15,5 +15,5 @@ Contact lsmith130 if you wish to contribute.
 ## Workflow
 All commands are run from the project directory.
 
-- to run: `go run .`
+- to run: `go run ./cmd/`
 - to test: `go test`
